@@ -10,6 +10,14 @@ Nano on Android.
 *   Please follow the [instructions to set up experimental access to Gemini Nano](https://developer.android.com/ai/gemini-nano/experimental), specifically the [prerequisites](https://developer.android.com/ai/gemini-nano/experimental#prerequisites) and [updates APKs](https://developer.android.com/ai/gemini-nano/experimental#update-apks) sections.
 *   Run the sample code on your Pixel 9 device after following the setup instructions.
 
+## Screenshots
+
+These screenshots show the main screens of the application. The first one shows the entry point where the user can choose between different options.
+The second shows the main screen where the user can interact with the application.
+
+![Screenshot 1](link_to_screenshot_1.png)
+![Screenshot 2](link_to_screenshot_2.png)
+
 ## License
 
 Copyright 2024 Google, Inc.
