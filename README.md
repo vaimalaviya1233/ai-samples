@@ -1,14 +1,21 @@
-# Google AI Edge SDK Quickstart
+# Google AI Samples
 
- 🚨 Important Note: Please follow the [instructions to set up experimental access to Gemini Nano](https://developer.android.com/ai/gemini-nano/experimental) **before running the sample app**. You will need a physical Pixel 9 device to run this sample.
+This repository provides a collection of samples showcasing Google AI technologies.
 
-This sample app demonstrates how to use the Google AI Edge SDK to access Gemini
-Nano on Android.
+## Repository Structure
+
+The repository is organized into the following folders:
+
+* [**gemini-nano**](gemini-nano/): This folder contains samples focused on experimenting with 
+Gemini Nano. You'll find code and resources here to help you explore and utilize Gemini Nano in 
+your projects.
+* [**ai-catalog**](ai-catalog): This folder contains the Android AI Sample app. It demonstrates 
+various AI capabilities within an Android application.
 
 ## Getting Started
 
-*   Please follow the [instructions to set up experimental access to Gemini Nano](https://developer.android.com/ai/gemini-nano/experimental), specifically the [prerequisites](https://developer.android.com/ai/gemini-nano/experimental#prerequisites) and [updates APKs](https://developer.android.com/ai/gemini-nano/experimental#update-apks) sections.
-*   Run the sample code on your Pixel 9 device after following the setup instructions.
+To get started with the samples, navigate to the specific folder you're interested in and follow
+the instructions within that folder's README.md.
 
 ## License
 
