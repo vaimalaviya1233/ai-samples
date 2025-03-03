@@ -38,7 +38,7 @@ class GeminiChatbotViewModel @Inject constructor(): ViewModel() {
 
     private val generativeModel by lazy {
         Firebase.vertexAI.generativeModel(
-            "gemini-1.5-pro",
+            "gemini-2.0-flash",
             generationConfig = generationConfig {
                 temperature = 0.9f
                 topK = 32

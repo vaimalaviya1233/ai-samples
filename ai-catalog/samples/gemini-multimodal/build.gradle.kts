@@ -66,6 +66,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.vertexai)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)

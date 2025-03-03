@@ -37,6 +37,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -62,9 +63,7 @@ fun GeminiChatbotScreen (
 
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
-
     val messages by viewModel.messageList.collectAsState()
-
     var message by rememberSaveable { mutableStateOf("") }
 
     Scaffold (
@@ -72,9 +71,15 @@ fun GeminiChatbotScreen (
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(title = {
-                Text(text = stringResource(id = R.string.geminichatbot_title_bar))
-            })
+            TopAppBar(
+                colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text(text = stringResource(id = R.string.geminichatbot_title_bar))
+                }
+            )
         }
     ){ innerPadding ->
         Column {

@@ -11,8 +11,8 @@ some of Google's models.
 
 Browse the samples inside the `/samples` folder:
 
-- [gemini-chatbot a simple chatbot using Gemini 1.5 Flash]()
-- [gemini-multimodal a single screen applicaiton leveraging text+image to text generation with Gemini 1.5 Flash]()
+- gemini-chatbot a simple chatbot using Gemini 1.5 Flash
+- gemini-multimodal a single screen application leveraging text+image to text generation with Gemini 1.5 Flash
 - More to come...
 
 > **Requires Firebase setup** the samples relying on Google Cloud models (Gemini Pro, Gemini Flash, etc...) 

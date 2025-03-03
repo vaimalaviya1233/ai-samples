@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -40,11 +41,14 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -60,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun GeminiMultimodalScreen(
@@ -88,24 +93,27 @@ fun GeminiMultimodalScreen(
             }
         }
 
-    Scaffold {
+    Scaffold (
+        topBar = {
+            TopAppBar(
+                colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text(text = stringResource(id = R.string.geminimultimodal_title_bar))
+                }
+            )
+        }
+    ){ innerPadding ->
         Column (
             Modifier
                 .padding(12.dp)
                 .verticalScroll(rememberScrollState())
+                .padding(innerPadding)
         ) {
-            Spacer(modifier = Modifier.height(35.dp))
-            Text(
-                text = "Gemini Multimodal example",
-                fontSize = 24.sp,
-                modifier = Modifier
-                    .padding(4.dp)
-            )
+            Spacer(modifier = Modifier.height(12.dp))
             Card(
-                border = BorderStroke(
-                    2.dp,
-                    MaterialTheme.colorScheme.primary
-                ),
                 modifier = Modifier
                     .size(
                         width = 450.dp,
@@ -121,6 +129,7 @@ fun GeminiMultimodalScreen(
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(6.dp))
             Row {
                 Button (
                     onClick = {
@@ -130,15 +139,13 @@ fun GeminiMultimodalScreen(
                     Icon(Icons.Default.CameraAlt, contentDescription = "Camera")
                 }
             }
-            Spacer(modifier = Modifier
-                .height(30.dp)
-                .padding(12.dp))
-
+            Spacer(modifier = Modifier.height(30.dp))
             TextField(
                 value = editTextValue,
                 onValueChange = { editTextValue = it },
                 label = { Text("Prompt") }
             )
+            Spacer(modifier = Modifier.height(6.dp))
             Button (
                 onClick = {
                     if (bitmap!=null) {
@@ -150,10 +157,8 @@ fun GeminiMultimodalScreen(
                 Icon(Icons.Default.SmartToy, contentDescription = "Robot")
                 Text(modifier = Modifier.padding(start = 8.dp), text = "Generate")
             }
-
             Spacer(modifier = Modifier
-                .height(30.dp)
-                .padding(12.dp))
+                .height(30.dp))
 
             if (isGenerating){
                 Text(
@@ -164,8 +169,6 @@ fun GeminiMultimodalScreen(
                     text = textResponse
                 )
             }
-
-    }
-
+        }
     }
 }
