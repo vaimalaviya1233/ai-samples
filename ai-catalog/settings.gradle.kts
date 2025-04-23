@@ -40,3 +40,6 @@ rootProject.name = "AI Sample Catalog"
 include(":app")
 include(":samples:gemini-multimodal")
 include(":samples:gemini-chatbot")
+include(":samples:genai-summarization")
+include(":samples:genai-writing-assistance")
+include(":samples:genai-image-description")
