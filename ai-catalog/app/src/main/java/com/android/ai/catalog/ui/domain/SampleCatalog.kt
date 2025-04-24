@@ -26,6 +26,7 @@ import com.android.ai.samples.geminimultimodal.GeminiMultimodalScreen
 import com.android.ai.samples.genai_image_description.GenAIImageDescriptionScreen
 import com.android.ai.samples.genai_summarization.GenAISummarizationScreen
 import com.android.ai.samples.genai_writing_assistance.GenAIWritingAssistanceScreen
+import com.android.ai.samples.imagen.ImagenScreen
 
 class SampleCatalog(
     context: Context
@@ -37,14 +38,14 @@ class SampleCatalog(
             description = context.getString(R.string.gemini_multimodal_sample_description),
             route = "GeminiMultimodalScreen",
             sampleEntryScreen = { GeminiMultimodalScreen() },
-            tags = listOf(SampleTags.FIREBASE, SampleTags.GEMINI_1_5_FLASH)
+            tags = listOf(SampleTags.GEMINI_1_5_FLASH, SampleTags.FIREBASE)
         ),
         SampleCatalogItem(
             title = context.getString(R.string.gemini_chatbot_sample_title),
             description = context.getString(R.string.gemini_chatbot_sample_description),
             route = "GeminiChitchatScreen",
             sampleEntryScreen = { GeminiChatbotScreen() },
-            tags = listOf(SampleTags.FIREBASE, SampleTags.GEMINI_1_5_PRO)
+            tags = listOf(SampleTags.GEMINI_1_5_PRO, SampleTags.FIREBASE)
         ),
         SampleCatalogItem(
             title = context.getString(R.string.genai_summarization_sample_title),
@@ -66,6 +67,13 @@ class SampleCatalog(
             route = "GenAIWritingAssistanceScreen",
             sampleEntryScreen = { GenAIWritingAssistanceScreen() },
             tags = listOf(SampleTags.GEMINI_NANO)
+        ),
+        SampleCatalogItem(
+            title = context.getString(R.string.imagen_sample_title),
+            description = context.getString(R.string.imagen_sample_description),
+            route = "ImagenImageGenerationScreen",
+            sampleEntryScreen = { ImagenScreen() },
+            tags = listOf(SampleTags.Imagen, SampleTags.FIREBASE)
         )
         // To create a new sample entry, add a new SampleCatalogItem here.
     )
@@ -88,6 +96,7 @@ enum class SampleTags(
     FIREBASE("Firebase", Color(0xFFFF9100), Color.White),
     GEMINI_1_5_PRO("Gemini 1.5 Pro", Color(0xFF4285F4), Color.White),
     GEMINI_1_5_FLASH("Gemini 1.5 Flash", Color(0xFF4285F4), Color.White),
-    GEMINI_NANO("Gemini Nano", Color(0xFF7abafe), Color.White)
+    GEMINI_NANO("Gemini Nano", Color(0xFF7abafe), Color.White),
+    Imagen("Imagen", Color(0xFF7CB342), Color.White)
 }
 

@@ -84,6 +84,7 @@ dependencies {
     implementation(project(":samples:genai-summarization"))
     implementation(project(":samples:genai-image-description"))
     implementation(project(":samples:genai-writing-assistance"))
+    implementation(project(":samples:imagen"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
