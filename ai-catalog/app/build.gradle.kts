@@ -85,6 +85,7 @@ dependencies {
     implementation(project(":samples:genai-image-description"))
     implementation(project(":samples:genai-writing-assistance"))
     implementation(project(":samples:imagen"))
+    implementation(project(":samples:magic-selfie"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

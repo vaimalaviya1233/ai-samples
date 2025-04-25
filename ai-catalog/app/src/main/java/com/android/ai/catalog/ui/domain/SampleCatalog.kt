@@ -27,6 +27,7 @@ import com.android.ai.samples.genai_image_description.GenAIImageDescriptionScree
 import com.android.ai.samples.genai_summarization.GenAISummarizationScreen
 import com.android.ai.samples.genai_writing_assistance.GenAIWritingAssistanceScreen
 import com.android.ai.samples.imagen.ImagenScreen
+import com.android.ai.samples.magicselfie.MagicSelfieScreen
 
 class SampleCatalog(
     context: Context
@@ -73,7 +74,14 @@ class SampleCatalog(
             description = context.getString(R.string.imagen_sample_description),
             route = "ImagenImageGenerationScreen",
             sampleEntryScreen = { ImagenScreen() },
-            tags = listOf(SampleTags.Imagen, SampleTags.FIREBASE)
+            tags = listOf(SampleTags.IMAGEN, SampleTags.FIREBASE)
+        ),
+        SampleCatalogItem(
+            title = context.getString(R.string.magic_selfie_sample_title),
+            description = context.getString(R.string.magic_selfie_sample_description),
+            route = "MagicSelfieScreen",
+            sampleEntryScreen = { MagicSelfieScreen() },
+            tags = listOf(SampleTags.IMAGEN, SampleTags.FIREBASE, SampleTags.ML_KIT)
         )
         // To create a new sample entry, add a new SampleCatalogItem here.
     )
@@ -97,6 +105,7 @@ enum class SampleTags(
     GEMINI_1_5_PRO("Gemini 1.5 Pro", Color(0xFF4285F4), Color.White),
     GEMINI_1_5_FLASH("Gemini 1.5 Flash", Color(0xFF4285F4), Color.White),
     GEMINI_NANO("Gemini Nano", Color(0xFF7abafe), Color.White),
-    Imagen("Imagen", Color(0xFF7CB342), Color.White)
+    IMAGEN("Imagen", Color(0xFF7CB342), Color.White),
+    ML_KIT("ML Kit", Color.White, Color(0xFF4285F4))
 }
 
