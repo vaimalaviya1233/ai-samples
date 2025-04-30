@@ -125,6 +125,7 @@ fun GenAISummarizationScreen(viewModel: GenAISummarizationViewModel = hiltViewMo
             ModalBottomSheet(
                 onDismissRequest = {
                     showBottomSheet = false
+                    viewModel.clearGeneratedSummary()
                 }, sheetState = sheetState, modifier = Modifier.padding(innerPadding)
             ) {
                 Text(

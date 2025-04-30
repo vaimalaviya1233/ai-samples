@@ -19,15 +19,78 @@ package com.android.ai.samples.genai_summarization
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.mlkit.genai.common.FeatureStatus
+import com.google.mlkit.genai.summarization.Summarization
+import com.google.mlkit.genai.summarization.SummarizationRequest
+import com.google.mlkit.genai.summarization.Summarizer
+import com.google.mlkit.genai.summarization.SummarizerOptions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.guava.await
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.android.ai.samples.geminimultimodal.R
 
 class GenAISummarizationViewModel @Inject constructor() : ViewModel() {
     private val _summarizationGenerated = MutableStateFlow("")
     val summarizationGenerated: StateFlow<String> = _summarizationGenerated
 
+    private var summarizer: Summarizer? = null
+
     fun summarize(textToSummarize: String, context: Context) {
-        _summarizationGenerated.value = "TODO"
+        if (textToSummarize.isEmpty()) {
+            _summarizationGenerated.value = context.getString(R.string.summarization_no_input)
+            return
+        }
+
+        val summarizationOptions =
+            SummarizerOptions.builder(context)
+                .setOutputType(SummarizerOptions.OutputType.THREE_BULLETS)
+                .build()
+        summarizer = Summarization.getClient(summarizationOptions)
+
+        viewModelScope.launch {
+            summarizer?.let { summarizer ->
+                val featureStatus = summarizer.checkFeatureStatus().await()
+                if (featureStatus == FeatureStatus.UNAVAILABLE) {
+                    _summarizationGenerated.value =
+                        context.getString(R.string.summarization_not_available)
+                    return@launch
+                }
+
+                // If feature is downloadable, making an inference call will automatically start
+                // the downloading process.
+                // If feature is downloading, the inference request will automatically execute after
+                // the feature has been downloaded.
+                // Alternatively, you can call summarizer.downloadFeature() to monitor the
+                // progress of the download.
+                if (featureStatus == FeatureStatus.DOWNLOADABLE ||
+                    featureStatus == FeatureStatus.DOWNLOADING
+                ) {
+                    _summarizationGenerated.value =
+                        context.getString(R.string.summarization_downloading)
+                }
+
+                val summarizationRequest = SummarizationRequest.builder(textToSummarize).build()
+                summarizer.runInference(summarizationRequest) { newText ->
+                    if (_summarizationGenerated.value ==
+                        context.getString(R.string.summarization_downloading)
+                    ) {
+                        clearGeneratedSummary()
+                    }
+                    _summarizationGenerated.value += newText
+                }
+                return@launch
+            }
+        }
+    }
+
+    fun clearGeneratedSummary() {
+        _summarizationGenerated.value = ""
+    }
+
+    override fun onCleared() {
+        summarizer?.close()
     }
 }

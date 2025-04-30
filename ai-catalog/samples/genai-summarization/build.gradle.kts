@@ -31,7 +31,7 @@ android {
     }
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -70,5 +70,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.genai.summarization)
+    implementation(libs.kotlinx.coroutines.guava)
     ksp(libs.hilt.compiler)
 }

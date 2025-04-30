@@ -25,4 +25,8 @@
     <string name="genai_rewrite_sample_text_2">Regarding the report you finished recently, I wanted to mention that some parts of it were a little bit unclear and I had some difficulty understanding what you were trying to say in those sections. Maybe you could try to explain things more simply next time you write something like this.</string>
     <string name="genai_rewrite_sample_text_3">Hey, how are things going with you at the moment? Just wanted to check in and see what you have been up to recently and if everything is okay.</string>
     <string name="genai_writing_assistance_reset_btn">Reset</string>
+
+    <string name="genai_writing_assistance_no_input">No text inputted</string>
+    <string name="genai_writing_assistance_not_available">Feature is not available on this device</string>
+    <string name="genai_writing_assistance_downloading">Downloading feature</string>
 </resources>

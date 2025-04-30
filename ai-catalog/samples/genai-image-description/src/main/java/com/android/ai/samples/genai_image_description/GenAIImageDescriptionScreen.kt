@@ -17,12 +17,11 @@
 
 package com.android.ai.samples.genai_image_description
 
-import android.graphics.Bitmap
+import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -48,13 +47,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil3.compose.AsyncImage
 import com.android.ai.samples.geminimultimodal.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,10 +67,10 @@ fun GenAIImageDescriptionScreen(viewModel: GenAIImageDescriptionViewModel = hilt
 
     val imageDescriptionResult = viewModel.resultGenerated.collectAsState()
 
-    var imageBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
     val photoPickerLauncher = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
         uri?.let {
-            imageBitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+            imageUri = it
         }
     }
 
@@ -94,14 +93,12 @@ fun GenAIImageDescriptionScreen(viewModel: GenAIImageDescriptionViewModel = hilt
                     .size(width = 450.dp, height = 450.dp)
                     .padding(20.dp)
             ) {
-                imageBitmap?.let {
-                    Image(
-                        bitmap = it.asImageBitmap(),
-                        contentDescription = "Selected image",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                AsyncImage(
+                    model = imageUri,
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
 
             // Select image button
@@ -131,7 +128,7 @@ fun GenAIImageDescriptionScreen(viewModel: GenAIImageDescriptionViewModel = hilt
                 Button(
                     onClick = {
                         showBottomSheet = true
-                        viewModel.getImageDescription(imageBitmap, context)
+                        viewModel.getImageDescription(imageUri, context)
                     }, modifier = Modifier.padding(10.dp)
                 ) {
                     Text(
@@ -146,6 +143,7 @@ fun GenAIImageDescriptionScreen(viewModel: GenAIImageDescriptionViewModel = hilt
             ModalBottomSheet(
                 onDismissRequest = {
                     showBottomSheet = false
+                    viewModel.clearGeneratedText()
                 }, sheetState = sheetState, modifier = Modifier.padding(innerPadding)
             ) {
                 Text(

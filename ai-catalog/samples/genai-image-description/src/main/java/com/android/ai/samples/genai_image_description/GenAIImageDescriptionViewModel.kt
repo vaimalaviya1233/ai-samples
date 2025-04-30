@@ -19,21 +19,80 @@ package com.android.ai.samples.genai_image_description
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.mlkit.genai.common.FeatureStatus
+import kotlinx.coroutines.guava.await
+import com.google.mlkit.genai.imagedescription.ImageDescriber
+import com.google.mlkit.genai.imagedescription.ImageDescriberOptions
+import com.google.mlkit.genai.imagedescription.ImageDescription
+import com.google.mlkit.genai.imagedescription.ImageDescriptionRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.android.ai.samples.geminimultimodal.R
 
 class GenAIImageDescriptionViewModel @Inject constructor() : ViewModel() {
     private val _resultGenerated = MutableStateFlow("")
     val resultGenerated: StateFlow<String> = _resultGenerated
 
-    fun getImageDescription(bitmap: Bitmap?, context: Context) {
-        if (bitmap == null) {
-            _resultGenerated.value = "No image selected"
+    private var imageDescriber: ImageDescriber? = null
+
+    fun getImageDescription(imageUri: Uri?, context: Context) {
+        if (imageUri == null) {
+            _resultGenerated.value =
+                context.getString(R.string.genai_image_description_no_image_selected)
             return
         }
 
-        _resultGenerated.value = "TODO"
+        val imageDescriberOptions = ImageDescriberOptions.builder(context).build()
+        imageDescriber = ImageDescription.getClient(imageDescriberOptions)
+
+        viewModelScope.launch {
+            imageDescriber?.let { imageDescriber ->
+                val featureStatus = imageDescriber.checkFeatureStatus().await()
+
+                if (featureStatus == FeatureStatus.UNAVAILABLE) {
+                    _resultGenerated.value =
+                        context.getString(R.string.genai_image_description_not_available)
+                    return@launch
+                }
+
+                // If feature is downloadable, making an inference call will automatically start
+                // the downloading process.
+                // If feature is downloading, the inference request will automatically execute after
+                // the feature has been downloaded.
+                // Alternatively, you can call imageDescriber.downloadFeature() to monitor the
+                // progress of the download.
+                if (featureStatus == FeatureStatus.DOWNLOADABLE ||
+                    featureStatus == FeatureStatus.DOWNLOADING
+                ) {
+                    _resultGenerated.value =
+                        context.getString(R.string.genai_image_description_downloading)
+                }
+
+                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
+                val request = ImageDescriptionRequest.builder(bitmap).build()
+                imageDescriber.runInference(request) { newText ->
+                    if (_resultGenerated.value ==
+                        context.getString(R.string.genai_image_description_downloading)) {
+                        clearGeneratedText()
+                    }
+                    _resultGenerated.value += newText
+                }
+                return@launch
+            }
+        }
+    }
+
+    fun clearGeneratedText() {
+        _resultGenerated.value = ""
+    }
+
+    override fun onCleared() {
+        imageDescriber?.close()
     }
 }

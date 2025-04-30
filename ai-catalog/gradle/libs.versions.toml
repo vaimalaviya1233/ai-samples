@@ -1,11 +1,17 @@
 [versions]
 agp = "8.8.0"
+coilCompose = "3.1.0"
 firebaseBom = "33.12.0"
+genaiImageDescription = "1.0.0-beta1"
+genaiProofreading = "1.0.0-beta1"
+genaiRewrite = "1.0.0-beta1"
+genaiSummarization = "1.0.0-beta1"
 kotlin = "2.1.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
+kotlinxCoroutinesGuava = "1.10.2"
 kotlinxSerializationJson = "1.6.2"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
@@ -23,8 +29,13 @@ material = "1.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-vertexai = { group = "com.google.firebase", name = "firebase-vertexai" }
+genai-image-description = { module = "com.google.mlkit:genai-image-description", version.ref = "genaiImageDescription" }
+genai-proofreading = { module = "com.google.mlkit:genai-proofreading", version.ref = "genaiProofreading" }
+genai-rewrite = { module = "com.google.mlkit:genai-rewriting", version.ref = "genaiRewrite" }
+genai-summarization = { module = "com.google.mlkit:genai-summarization", version.ref = "genaiSummarization" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -41,6 +52,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinxCoroutinesGuava" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt"}

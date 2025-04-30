@@ -70,5 +70,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.genai.proofreading)
+    implementation(libs.genai.rewrite)
+    implementation(libs.kotlinx.coroutines.guava)
     ksp(libs.hilt.compiler)
 }

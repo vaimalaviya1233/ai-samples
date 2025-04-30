@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.android.ai.samples.geminimultimodal.R
+import com.google.mlkit.genai.rewriting.RewriterOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -150,6 +151,7 @@ fun GenAIWritingAssistanceScreen(viewModel: GenAIWritingAssistanceViewModel = hi
             ModalBottomSheet(
                 onDismissRequest = {
                     showBottomSheet = false
+                    viewModel.clearGeneratedText()
                 },
                 sheetState = sheetState,
                 modifier = Modifier.padding(innerPadding)
@@ -163,12 +165,12 @@ fun GenAIWritingAssistanceScreen(viewModel: GenAIWritingAssistanceViewModel = hi
 
         if (showRewriteOptionsDialog) {
             RewriteOptionsDialog(
-                onConfirm = { rewriteStyle ->
+                onConfirm = { rewriteStyleSelected ->
                     showRewriteOptionsDialog = false
                     showBottomSheet = true
                     viewModel.rewrite(
                         textInput,
-                        viewModel.getRewriteStyle(rewriteStyle),
+                        rewriteStyleSelected.rewriteStyle,
                         context
                     )
                 },
@@ -210,7 +212,7 @@ private fun SecondaryButton(buttonText: String, onClick: () -> Unit) {
 
 @Composable
 fun RewriteOptionsDialog(
-    onConfirm: (rewriteStyle: String) -> Unit,
+    onConfirm: (rewriteStyle: RewriteStyle) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -221,29 +223,28 @@ fun RewriteOptionsDialog(
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
-            val radioOptions =
-                listOf("Elaborate", "Emojify", "Shorten", "Friendly", "Professional", "Rephrase")
+            val radioOptions = RewriteStyle.entries
             val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
             Column(modifier.selectableGroup()) {
-                radioOptions.forEach { text ->
+                radioOptions.forEach { option ->
                     Row(
                         Modifier
                             .fillMaxWidth()
                             .height(56.dp)
                             .selectable(
-                                selected = (text == selectedOption),
-                                onClick = { onOptionSelected(text) },
+                                selected = (option == selectedOption),
+                                onClick = { onOptionSelected(option) },
                                 role = Role.RadioButton
                             )
                             .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            selected = (text == selectedOption),
+                            selected = (option == selectedOption),
                             onClick = null // null recommended for accessibility with screen readers
                         )
                         Text(
-                            text = text,
+                            text = option.displayName,
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(start = 16.dp)
                         )
@@ -273,4 +274,13 @@ fun RewriteOptionsDialog(
             }
         }
     }
+}
+
+enum class RewriteStyle(val rewriteStyle: Int, val displayName: String) {
+    ELABORATE(RewriterOptions.OutputType.ELABORATE, "Elaborate"),
+    EMOJIFY(RewriterOptions.OutputType.EMOJIFY, "Emojify"),
+    SHORTEN(RewriterOptions.OutputType.SHORTEN, "Shorten"),
+    FRIENDLY(RewriterOptions.OutputType.FRIENDLY, "Friendly"),
+    PROFESSIONAL(RewriterOptions.OutputType.PROFESSIONAL, "Professional"),
+    REPHRASE(RewriterOptions.OutputType.REPHRASE, "Rephrase"),
 }
