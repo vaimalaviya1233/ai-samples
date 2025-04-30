@@ -17,8 +17,260 @@
 
 package com.android.ai.samples.genai_writing_assistance
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.android.ai.samples.geminimultimodal.R
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GenAIWritingAssistanceScreen(viewModel: GenAIWritingAssistanceViewModel = hiltViewModel()) {
+
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var showRewriteOptionsDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    val resultGenerated = viewModel.resultGenerated.collectAsState()
+
+    val proofreadSampleTextOptions = stringArrayResource(R.array.proofread_sample_text)
+    val rewriteSampleTextOptions = stringArrayResource(R.array.rewrite_sample_text)
+
+
+    var textInput by remember { mutableStateOf("") }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(), topBar = {
+            TopAppBar(
+                colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ), title = {
+                    Text(text = stringResource(id = R.string.genai_writing_assistance_title_bar))
+                })
+        }) { innerPadding ->
+
+        Column(
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            // Text input box
+            TextField(
+                value = textInput,
+                onValueChange = { textInput = it },
+                label = { Text(stringResource(id = R.string.genai_writing_assistance_text_input_label)) },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(.8f)
+            )
+
+            Box(
+                modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+            ) {
+                Row {
+                    // Proofread button
+                    MainButton(
+                        buttonText = stringResource(id = R.string.genai_writing_assistance_proofread_btn),
+                        onClick = {
+                            showBottomSheet = true
+                            viewModel.proofread(textInput, context)
+                        })
+
+                    // Rewrite button
+                    MainButton(
+                        buttonText = stringResource(id = R.string.genai_writing_assistance_rewrite_btn),
+                        onClick = {
+                            showRewriteOptionsDialog = true
+                        })
+                }
+            }
+
+            // Extra options buttons
+            Box(
+                modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+            ) {
+                Row {
+                    SecondaryButton(
+                        buttonText = stringResource(id = R.string.genai_writing_assistance_proofread_sample_text_btn),
+                        onClick = { textInput = proofreadSampleTextOptions.random() },
+                    )
+
+                    SecondaryButton(
+                        buttonText = stringResource(id = R.string.genai_writing_assistance_rewrite_sample_text_btn),
+                        onClick = { textInput = rewriteSampleTextOptions.random() }
+                    )
+
+                    SecondaryButton(
+                        buttonText = stringResource(id = R.string.genai_writing_assistance_reset_btn),
+                        onClick = { textInput = "" }
+                    )
+                }
+            }
+        }
+
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+                sheetState = sheetState,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                Text(
+                    text = resultGenerated.value,
+                    modifier = Modifier.padding(10.dp)
+                )
+            }
+        }
+
+        if (showRewriteOptionsDialog) {
+            RewriteOptionsDialog(
+                onConfirm = { rewriteStyle ->
+                    showRewriteOptionsDialog = false
+                    showBottomSheet = true
+                    viewModel.rewrite(
+                        textInput,
+                        viewModel.getRewriteStyle(rewriteStyle),
+                        context
+                    )
+                },
+                onDismissRequest = {
+                    showRewriteOptionsDialog = false
+                })
+        }
+    }
+}
 
 @Composable
-fun GenAIWritingAssistanceScreen() {
+private fun MainButton(buttonText: String, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier.padding(10.dp)
+    ) {
+        Text(
+            text = buttonText,
+            fontSize = 24.sp
+        )
+    }
+}
+
+@Composable
+private fun SecondaryButton(buttonText: String, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+        modifier = Modifier.padding(10.dp)
+    ) {
+        Text(
+            text = buttonText,
+            textAlign = TextAlign.Center,
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onSecondaryContainer
+        )
+    }
+}
+
+@Composable
+fun RewriteOptionsDialog(
+    onConfirm: (rewriteStyle: String) -> Unit,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Dialog(onDismissRequest = { onDismissRequest() }) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            val radioOptions =
+                listOf("Elaborate", "Emojify", "Shorten", "Friendly", "Professional", "Rephrase")
+            val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+            Column(modifier.selectableGroup()) {
+                radioOptions.forEach { text ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .selectable(
+                                selected = (text == selectedOption),
+                                onClick = { onOptionSelected(text) },
+                                role = Role.RadioButton
+                            )
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (text == selectedOption),
+                            onClick = null // null recommended for accessibility with screen readers
+                        )
+                        Text(
+                            text = text,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    TextButton(
+                        onClick = { onDismissRequest() },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text(stringResource(id = R.string.genai_writing_assistance_dismiss_btn))
+                    }
+                    TextButton(
+                        onClick = {
+                            onConfirm(selectedOption)
+                        },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text(stringResource(id = R.string.genai_writing_assistance_confirm_btn))
+                    }
+                }
+            }
+        }
+    }
 }

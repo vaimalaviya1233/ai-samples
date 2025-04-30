@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="genai_image_description_title_bar">Image Description with Nano</string>
+    <string name="genai_image_description_add_image">Add image</string>
+    <string name="genai_image_description_run_inference">Generate image description</string>
+</resources>
