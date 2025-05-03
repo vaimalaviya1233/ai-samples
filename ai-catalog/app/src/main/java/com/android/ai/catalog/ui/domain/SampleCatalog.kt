@@ -28,6 +28,7 @@ import com.android.ai.samples.genai_summarization.GenAISummarizationScreen
 import com.android.ai.samples.genai_writing_assistance.GenAIWritingAssistanceScreen
 import com.android.ai.samples.imagen.ImagenScreen
 import com.android.ai.samples.magicselfie.MagicSelfieScreen
+import com.android.ai.samples.geminivideosummary.VideoSummarizationScreen
 
 class SampleCatalog(
     context: Context
@@ -82,7 +83,15 @@ class SampleCatalog(
             route = "MagicSelfieScreen",
             sampleEntryScreen = { MagicSelfieScreen() },
             tags = listOf(SampleTags.IMAGEN, SampleTags.FIREBASE, SampleTags.ML_KIT)
-        )
+        ),
+        SampleCatalogItem(
+            title = context.getString(R.string.gemini_video_summarization_sample_title),
+            description = context.getString(R.string.gemini_video_summarization_sample_description),
+            route = "VideoSummarizationScreen",
+            sampleEntryScreen = { VideoSummarizationScreen() },
+            tags = listOf(SampleTags.GEMINI_2_0_FLASH, SampleTags.FIREBASE, SampleTags.MEDIA3)
+        ),
+
         // To create a new sample entry, add a new SampleCatalogItem here.
     )
 
@@ -99,13 +108,15 @@ data class SampleCatalogItem(
 enum class SampleTags(
     val label: String,
     val backgroundColor: Color,
-    val textColor: Color
+    val textColor: Color,
 ) {
     FIREBASE("Firebase", Color(0xFFFF9100), Color.White),
-    GEMINI_1_5_PRO("Gemini 2.0 Pro", Color(0xFF4285F4), Color.White),
-    GEMINI_1_5_FLASH("Gemini 2.0 Flash", Color(0xFF4285F4), Color.White),
+    GEMINI_1_5_PRO("Gemini 1.5 Pro", Color(0xFF4285F4), Color.White),
+    GEMINI_1_5_FLASH("Gemini 1.5 Flash", Color(0xFF4285F4), Color.White),
+    GEMINI_2_0_FLASH("Gemini 2.0 Flash", Color(0xFF4285F4), Color.White),
     GEMINI_NANO("Gemini Nano", Color(0xFF7abafe), Color.White),
     IMAGEN("Imagen", Color(0xFF7CB342), Color.White),
+    MEDIA3("Media3", Color(0xFF7CB584), Color.White),
     ML_KIT("ML Kit", Color.White, Color(0xFF4285F4))
 }
 
