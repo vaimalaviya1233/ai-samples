@@ -18,7 +18,7 @@
 <resources>
     <string name="see_code">See Code</string>
     <string name="placeholder_prompt">An oil painting of Alcatraz</string>
-    <string name="title_image_generation_screen">Imagen 3 image generation</string>
+    <string name="title_image_generation_screen">Imagen image generation</string>
     <string name="generate_button">Generate</string>
     <string name="generating_label">Generating...</string>
     <string name="prompt_label">Prompt</string>

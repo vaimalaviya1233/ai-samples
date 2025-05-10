@@ -19,6 +19,7 @@ package com.android.ai.samples.magicselfie
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Matrix
@@ -29,7 +30,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,13 +42,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -56,9 +63,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -68,11 +75,16 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import java.io.File
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MagicSelfieScreen(
     viewModel: MagicSelfieViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+
+    val topAppBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
 
     val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
     cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", android.hardware.camera2.CameraCharacteristics.LENS_FACING_FRONT)
@@ -86,34 +98,42 @@ fun MagicSelfieScreen(
     cameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
     var selfieBitmap by remember { mutableStateOf<Bitmap?>(null) }
-
     val progress by viewModel.progress.observeAsState(null)
-
     val generatedBitmap by viewModel.foregroundBitmap.collectAsState()
-
     var editTextValue by remember { mutableStateOf("A very scenic view from the edge of the grand canyon") }
 
     val resultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val ei = ExifInterface(tempSelfiePhoto.path)
                 selfieBitmap = rotateImageIfRequired(tempSelfiePhoto, MediaStore.Images.Media.getBitmap(currentContext.contentResolver, tempSelfiePhotoUri))
             }
         }
 
-    Scaffold {
+    Scaffold (
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopAppBar(
+                colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text(text = stringResource(id = R.string.magic_selfie))
+                },
+                actions = {
+                    SeeCodeButton(context)
+                }
+            )
+        }
+    ) {innerPadding ->
         Column (
             Modifier
-                .padding(12.dp)
+                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(35.dp))
-            Text(
-                text = stringResource(R.string.magic_selfie),
-                fontSize = 24.sp,
-                modifier = Modifier
-                    .padding(4.dp)
-            )
             Card(
                 modifier = Modifier
                     .size(
@@ -178,11 +198,6 @@ fun MagicSelfieScreen(
                     text = progress!!
                 )
             }
-
-            Spacer(modifier = Modifier
-                .height(30.dp)
-                .padding(12.dp))
-            SeeCodeButton()
         }
 
     }
@@ -222,25 +237,17 @@ fun flipImage(bitmap: Bitmap, horizontal: Boolean, vertical: Boolean): Bitmap {
 }
 
 @Composable
-fun SeeCodeButton() {
-    val context = LocalContext.current
+fun SeeCodeButton(context: Context) {
     val githubLink = "https://github.com/android/ai-samples/tree/main/ai-catalog/samples/magic-selfie"
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Button(
-            onClick = {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))
-                context.startActivity(intent)
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.see_code))
-        }
+    Button(onClick = {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))
+        context.startActivity(intent)
+    }) {
+        Icon(Icons.Filled.Code, contentDescription = "See code")
+        Text(
+            modifier = Modifier.padding(start = 8.dp),
+            fontSize = 12.sp,
+            text = stringResource(R.string.see_code)
+        )
     }
 }

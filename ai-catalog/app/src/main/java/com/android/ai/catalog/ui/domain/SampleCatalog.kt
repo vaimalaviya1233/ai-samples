@@ -102,8 +102,8 @@ enum class SampleTags(
     val textColor: Color
 ) {
     FIREBASE("Firebase", Color(0xFFFF9100), Color.White),
-    GEMINI_1_5_PRO("Gemini 1.5 Pro", Color(0xFF4285F4), Color.White),
-    GEMINI_1_5_FLASH("Gemini 1.5 Flash", Color(0xFF4285F4), Color.White),
+    GEMINI_1_5_PRO("Gemini 2.0 Pro", Color(0xFF4285F4), Color.White),
+    GEMINI_1_5_FLASH("Gemini 2.0 Flash", Color(0xFF4285F4), Color.White),
     GEMINI_NANO("Gemini Nano", Color(0xFF7abafe), Color.White),
     IMAGEN("Imagen", Color(0xFF7CB342), Color.White),
     ML_KIT("ML Kit", Color.White, Color(0xFF4285F4))

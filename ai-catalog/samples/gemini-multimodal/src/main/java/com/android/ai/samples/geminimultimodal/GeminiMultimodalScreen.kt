@@ -18,8 +18,10 @@ package com.android.ai.samples.geminimultimodal
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -38,6 +40,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -59,6 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,6 +74,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun GeminiMultimodalScreen(
     viewModel: GeminiMultimodalViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     val textResponse by viewModel.textGenerated.collectAsState()
@@ -102,6 +107,9 @@ fun GeminiMultimodalScreen(
                 ),
                 title = {
                     Text(text = stringResource(id = R.string.geminimultimodal_title_bar))
+                },
+                actions = {
+                    SeeCodeButton(context)
                 }
             )
         }
@@ -170,5 +178,21 @@ fun GeminiMultimodalScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun SeeCodeButton(context: Context) {
+    val githubLink = "https://github.com/android/ai-samples/tree/main/ai-catalog/samples/gemini-multimodal"
+    Button(onClick = {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))
+        context.startActivity(intent)
+    }) {
+        Icon(Icons.Filled.Code, contentDescription = "See code")
+        Text(
+            modifier = Modifier.padding(start = 8.dp),
+            fontSize = 12.sp,
+            text = stringResource(R.string.see_code)
+        )
     }
 }

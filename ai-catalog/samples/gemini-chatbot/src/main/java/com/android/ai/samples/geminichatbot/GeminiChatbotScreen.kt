@@ -17,6 +17,9 @@
 
 package com.android.ai.samples.geminichatbot
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,7 +33,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -48,11 +55,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,6 +70,7 @@ fun GeminiChatbotScreen (
     viewModel: GeminiChatbotViewModel = hiltViewModel()
 ) {
 
+    val context = LocalContext.current
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
     val messages by viewModel.messageList.collectAsState()
@@ -78,6 +88,9 @@ fun GeminiChatbotScreen (
                 ),
                 title = {
                     Text(text = stringResource(id = R.string.geminichatbot_title_bar))
+                },
+                actions = {
+                    SeeCodeButton(context)
                 }
             )
         }
@@ -171,6 +184,22 @@ fun MessageBubble(
         Text(
             modifier = Modifier.padding(16.dp),
             text = message.text
+        )
+    }
+}
+
+@Composable
+fun SeeCodeButton(context: Context) {
+    val githubLink = "https://github.com/android/ai-samples/tree/main/ai-catalog/samples/gemini-chatbot"
+    Button(onClick = {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))
+        context.startActivity(intent)
+    }) {
+        Icon(Icons.Filled.Code, contentDescription = "See code")
+        Text(
+            modifier = Modifier.padding(start = 8.dp),
+            fontSize = 12.sp,
+            text = stringResource(R.string.see_code)
         )
     }
 }

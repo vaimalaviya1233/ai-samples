@@ -3,4 +3,5 @@
     <string name="geminimultimodal_title_bar">Gemini Multimodal</string>
     <string name="geminimultimodal_prompt_placeholder">Describe this picture in a funny way with a lot of emojis</string>
     <string name="geminimultimodal_generating">Generating&#8230;</string>
+    <string name="see_code">See code</string>
 </resources>
