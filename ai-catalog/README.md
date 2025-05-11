@@ -1,5 +1,7 @@
 # Android AI Sample Catalog
 
+![Android AI Sample Catalog screenshots](https://developer.android.com/static/ai/assets/images/ai_sample_catalog_1440.png)
+
 This folder contains the Android AI Sample catalog, a stand alone application giving you access to 
 individual self-contained samples illustrating some of the Generative AI capabilities unlocked by 
 some of Google's models.
