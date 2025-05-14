@@ -1,21 +1,13 @@
-# Google AI Samples
+# Google AI Edge SDK Quickstart
 
-This repository provides a collection of samples showcasing Google AI technologies.
+*   [Read more about Google AI Edge SDK](https://developer.android.com/ai/gemini-nano-experimental)
 
-## Repository Structure
-
-The repository is organized into the following folders:
-
-* [**gemini-nano**](gemini-nano/): This folder contains samples focused on experimenting with 
-Gemini Nano. You'll find code and resources here to help you explore and utilize Gemini Nano in 
-your projects.
-* [**ai-catalog**](ai-catalog): This folder contains the Android AI Sample app. It demonstrates 
-various AI capabilities within an Android application.
+This sample app demonstrates how to use the Google AI Edge SDK to access Gemini
+Nano on Android.
 
 ## Getting Started
 
-To get started with the samples, navigate to the specific folder you're interested in and follow
-the instructions within that folder's README.md.
+*   Run the sample code on your Android device with AICore installed.
 
 ## License
 
