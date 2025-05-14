@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="summarize_video_button">Summarize Video</string>
+    <string name="video_summarization_title">Video summarization</string>
+    <string name="output_text_combined">%s%s</string>
+    <string name="output_text_initial">Initial</string>
+    <string name="output_text_generated_placeholder">"Text generated with Gemini : "</string>
+    <string name="output_text_loading">Loading…</string>
+    <string name="text_listen_to_ai_output">Listen to AI output</string>
+    <string name="pause">Pause</string>
+    <string name="see_code">See Code</string>
+</resources>

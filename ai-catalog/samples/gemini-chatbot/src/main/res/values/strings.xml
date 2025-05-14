@@ -2,4 +2,5 @@
 <resources>
     <string name="geminichatbot_title_bar">Gemini chatbot</string>
     <string name="geminichatbot_input_placeholder">Type your message</string>
+    <string name="see_code">See code</string>
 </resources>

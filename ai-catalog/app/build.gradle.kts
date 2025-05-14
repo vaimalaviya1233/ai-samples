@@ -30,7 +30,7 @@ android {
 
     defaultConfig {
         applicationId = "com.android.ai.catalog"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -81,6 +81,12 @@ dependencies {
 
     implementation(project(":samples:gemini-multimodal"))
     implementation(project(":samples:gemini-chatbot"))
+    implementation(project(":samples:genai-summarization"))
+    implementation(project(":samples:genai-image-description"))
+    implementation(project(":samples:genai-writing-assistance"))
+    implementation(project(":samples:imagen"))
+    implementation(project(":samples:magic-selfie"))
+    implementation(project(":samples:gemini-video-summarization"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
