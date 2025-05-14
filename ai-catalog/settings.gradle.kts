@@ -25,8 +25,6 @@ pluginManagement {
             }
         }
         mavenCentral()
-        // TODO: Remove replace with path where you downloaded GenAI API SDK
-        maven { url = uri("/Users/username/Downloads") }
         gradlePluginPortal()
     }
 }
@@ -35,8 +33,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        // TODO: Remove replace with path where you downloaded GenAI API SDK
-        maven { url = uri("/Users/username/Downloads") }
     }
 }
 
