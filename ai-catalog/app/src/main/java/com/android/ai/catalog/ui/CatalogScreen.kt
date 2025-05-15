@@ -17,6 +17,9 @@
 
 package com.android.ai.catalog.ui
 
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,14 +31,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -48,15 +57,19 @@ import androidx.navigation.compose.rememberNavController
 import com.android.ai.catalog.R
 import com.android.ai.catalog.ui.domain.SampleCatalog
 import com.android.ai.catalog.ui.domain.SampleCatalogItem
+import com.google.firebase.FirebaseApp
 import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogScreen(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     val navController = rememberNavController()
     val catalog = SampleCatalog(
-        LocalContext.current
+        context
     )
+
+    var isDialogOpened by remember { mutableStateOf(false) }
 
     NavHost(
         navController = navController,
@@ -81,7 +94,11 @@ fun CatalogScreen(modifier: Modifier = Modifier) {
                 ) {
                     items(catalog.list) {
                         CatalogListItem(catalogItem = it) {
-                            navController.navigate(it.route)
+                            if (it.needsFirebase && !isFirebaseInitialized()) {
+                                isDialogOpened = true
+                            } else {
+                                navController.navigate(it.route)
+                            }
                         }
                     }
                 }
@@ -94,6 +111,18 @@ fun CatalogScreen(modifier: Modifier = Modifier) {
                 catalogItem.sampleEntryScreen()
             }
         }
+    }
+
+
+    if (isDialogOpened) {
+        firebaseRequiredAlert(
+            onDismiss = { isDialogOpened = false },
+            onOpenFirebaseDocClick = {
+                isDialogOpened = false
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://firebase.google.com/docs/vertex-ai/get-started#no-existing-firebase"))
+                context.startActivity(intent)
+            }
+        )
     }
 }
 
@@ -151,3 +180,55 @@ fun CatalogListItem(
 
 @Serializable
 object HomeScreen
+
+@Composable
+fun firebaseRequiredAlert(
+    onDismiss: () -> Unit = {},
+    onOpenFirebaseDocClick: () -> Unit = {}
+) {
+    AlertDialog(
+            onDismissRequest = {
+                onDismiss()
+            },
+            title = {
+                Text(text = "Firebase Required")
+            },
+            text = {
+                Text("This feature requires Firebase to be initialized.")
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        onDismiss()
+                    }
+                ) {
+                    Text("Close")
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onOpenFirebaseDocClick()
+                    }
+                ) {
+                    Text("Show me how")
+                }
+            }
+        )
+}
+
+
+fun isFirebaseInitialized(): Boolean {
+    return try {
+        val firebaseApp = FirebaseApp.getInstance()
+        Log.d("CatalogScreen", "firebaseApp.options.projectId: ${firebaseApp.options.projectId}")
+        if (firebaseApp.options.projectId == "mock_project") {
+            Log.e("CatalogScreen", "Firebase is not initialized")
+            return false
+        }
+        return true
+    } catch (e: IllegalStateException) {
+        Log.e("CatalogScreen", "Firebase is not initialized")
+        return false
+    }
+}
