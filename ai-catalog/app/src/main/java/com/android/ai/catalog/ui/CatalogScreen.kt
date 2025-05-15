@@ -191,10 +191,10 @@ fun firebaseRequiredAlert(
                 onDismiss()
             },
             title = {
-                Text(text = "Firebase Required")
+                Text(text = stringResource(R.string.firebase_required))
             },
             text = {
-                Text("This feature requires Firebase to be initialized.")
+                Text(stringResource(R.string.firebase_required_description))
             },
             dismissButton = {
                 TextButton(
@@ -202,7 +202,7 @@ fun firebaseRequiredAlert(
                         onDismiss()
                     }
                 ) {
-                    Text("Close")
+                    Text(stringResource(R.string.close))
                 }
             },
             confirmButton = {
@@ -211,7 +211,7 @@ fun firebaseRequiredAlert(
                         onOpenFirebaseDocClick()
                     }
                 ) {
-                    Text("Show me how")
+                    Text(stringResource(R.string.firebase_doc_button))
                 }
             }
         )
