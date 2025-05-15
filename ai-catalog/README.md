@@ -13,8 +13,14 @@ some of Google's models.
 
 Browse the samples inside the `/samples` folder:
 
-- gemini-chatbot a simple chatbot using Gemini 2.0 Flash
-- gemini-multimodal a single screen application leveraging text+image to text generation with Gemini 1.5 Flash
+- **gemini-chatbot**: a simple chatbot using Gemini 2.0 Flash
+- **gemini-multimodal**: a single screen application leveraging text+image to text generation with Gemini 2.0 Flash
+- **genai-summarization**: a text summarization sample using Gemini Nano
+- **genai-image-description**: an image description sample using Gemini Nano
+- **genai-writing-assistance**: a proofreading and rewriting sample using Gemini Nano
+- **imagen**: an image generation sample using Imagen
+- **magic-selfie**: an sample using ML Kit subject segmentation and Imagen for image generation
+- **gemini-video-summarization**: a video summarization sample using Gemini 2.0 Flash
 - More to come...
 
 > **Requires Firebase setup** the samples relying on Google Cloud models (Gemini Pro, Gemini Flash, etc...) 

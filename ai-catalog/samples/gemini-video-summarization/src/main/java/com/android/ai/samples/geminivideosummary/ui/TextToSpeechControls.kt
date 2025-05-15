@@ -59,7 +59,8 @@ fun TextToSpeechControls(
             },
             modifier = Modifier
                 .clickable { onAccentDropdownExpanded(!isAccentDropdownExpanded) }
-                .padding(end = 8.dp))
+                .padding(end = 8.dp)
+                .weight(1f))
         DropdownMenu(
             expanded = isAccentDropdownExpanded,
             onDismissRequest = { onAccentDropdownExpanded(false) },

@@ -2,4 +2,5 @@
 <resources>
     <string name="magic_selfie">Magic Selfie</string>
     <string name="see_code">See code</string>
+    <string name="share_image">Share image</string>
 </resources>

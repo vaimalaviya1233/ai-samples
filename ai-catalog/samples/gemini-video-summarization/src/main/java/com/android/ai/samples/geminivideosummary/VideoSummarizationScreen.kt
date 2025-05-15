@@ -79,7 +79,6 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
     var newVideoUrl by remember { mutableStateOf("") }
     val outputText by viewModel.outputText.collectAsState()
     var textForSpeech by remember { mutableStateOf("") }
-    //manage the state of the Text to speech here
     var textToSpeech: TextToSpeech? by remember { mutableStateOf(null) }
     var isInitialized by remember { mutableStateOf(false) }
     var isSpeaking by remember { mutableStateOf(false) }
@@ -103,7 +102,6 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
             })
     }
 
-    //Initialize the text to speech.
     DisposableEffect(key1 = true) {
         textToSpeech = initializeTextToSpeech(context) { initialized ->
             isInitialized = initialized
@@ -112,9 +110,7 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
             textToSpeech?.shutdown()
         }
     }
-    // Default to English US
     var selectedAccent by remember { mutableStateOf(Locale.FRANCE) }
-    // Options for accents
     val accentOptions = listOf(
         Locale.UK,
         Locale.FRANCE,
@@ -148,7 +144,6 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
                 videoOptions = videoOptions,
                 onVideoUriSelected = { uri ->
                     selectedVideoUri = uri
-                    //clear the text when the video is changed.
                     viewModel.clearOutputText()
                 },
                 onNewVideoUrlChanged = { url ->
@@ -232,7 +227,6 @@ fun onSelectedVideoChange(
             exoPlayer.setMediaItem(MediaItem.fromUri(selectedVideoUri))
             exoPlayer.prepare()
         }
-        //when the video is changed stop speaking
         textToSpeech?.stop()
         onSpeakingStateChange(false, true)
     }
@@ -246,7 +240,6 @@ fun onSummarizeButtonClick(
 ) {
     if (selectedVideoUri != null) {
         viewModel.getVideoSummary(selectedVideoUri)
-        //when a button is pressed stop speaking
         textToSpeech?.stop()
         onSpeakingStateChange(false, true)
     }
