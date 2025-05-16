@@ -153,8 +153,7 @@ fun GenAIWritingAssistanceScreen(viewModel: GenAIWritingAssistanceViewModel = hi
                     showBottomSheet = false
                     viewModel.clearGeneratedText()
                 },
-                sheetState = sheetState,
-                modifier = Modifier.padding(innerPadding)
+                sheetState = sheetState
             ) {
                 Text(
                     text = resultGenerated.value,

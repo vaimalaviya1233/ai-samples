@@ -144,7 +144,7 @@ fun GenAIImageDescriptionScreen(viewModel: GenAIImageDescriptionViewModel = hilt
                 onDismissRequest = {
                     showBottomSheet = false
                     viewModel.clearGeneratedText()
-                }, sheetState = sheetState, modifier = Modifier.padding(innerPadding)
+                }, sheetState = sheetState
             ) {
                 Text(
                     text = imageDescriptionResult.value,
