@@ -126,7 +126,7 @@ fun GenAISummarizationScreen(viewModel: GenAISummarizationViewModel = hiltViewMo
                 onDismissRequest = {
                     showBottomSheet = false
                     viewModel.clearGeneratedSummary()
-                }, sheetState = sheetState, modifier = Modifier.padding(innerPadding)
+                }, sheetState = sheetState
             ) {
                 Text(
                     text = summarizationResult.value,
