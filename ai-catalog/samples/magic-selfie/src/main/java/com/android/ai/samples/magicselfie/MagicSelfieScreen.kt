@@ -30,6 +30,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -130,10 +131,10 @@ fun MagicSelfieScreen(
     ) {innerPadding ->
         Column (
             Modifier
+                .padding(12.dp)
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(35.dp))
             Card(
                 modifier = Modifier
                     .size(
@@ -158,7 +159,8 @@ fun MagicSelfieScreen(
                 }
 
             }
-            Row {
+            Spacer(modifier = Modifier.height(6.dp))
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                 Button (
                     onClick = {
                         resultLauncher.launch(cameraIntent)
@@ -167,9 +169,7 @@ fun MagicSelfieScreen(
                     Icon(Icons.Default.CameraAlt, contentDescription = "Camera")
                 }
             }
-            Spacer(modifier = Modifier
-                .height(30.dp)
-                .padding(12.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             TextField(
                 value = editTextValue,
@@ -178,7 +178,7 @@ fun MagicSelfieScreen(
             )
 
             Button (
-                modifier = Modifier.padding(horizontal = 6.dp),
+                modifier = Modifier.padding(vertical = 8.dp),
                 onClick = {
                     if (selfieBitmap!=null) {
                         viewModel.createMagicSelfie(selfieBitmap!!, editTextValue)
@@ -239,10 +239,13 @@ fun flipImage(bitmap: Bitmap, horizontal: Boolean, vertical: Boolean): Bitmap {
 @Composable
 fun SeeCodeButton(context: Context) {
     val githubLink = "https://github.com/android/ai-samples/tree/main/ai-catalog/samples/magic-selfie"
-    Button(onClick = {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))
-        context.startActivity(intent)
-    }) {
+    Button(
+        onClick = {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))
+            context.startActivity(intent)
+        },
+        modifier = Modifier.padding(end = 8.dp)
+    ) {
         Icon(Icons.Filled.Code, contentDescription = "See code")
         Text(
             modifier = Modifier.padding(start = 8.dp),
