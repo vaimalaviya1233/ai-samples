@@ -22,8 +22,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
-import com.google.firebase.vertexai.type.content
-import com.google.firebase.vertexai.vertexAI
+import com.google.firebase.ai.ai
+import com.google.firebase.ai.type.content
+import com.google.firebase.ai.type.GenerativeBackend
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -50,7 +51,7 @@ class VideoSummarizationViewModel @Inject constructor() : ViewModel() {
             _outputText.value = OutputTextState.Loading
 
             try {
-                val generativeModel = Firebase.vertexAI.generativeModel("gemini-2.0-flash")
+                val generativeModel = Firebase.ai(backend = GenerativeBackend.vertexAI()).generativeModel("gemini-2.0-flash")
 
                 val requestContent = content {
                     fileData(videoSource.toString(), "video/mp4")
