@@ -23,11 +23,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
-import com.google.firebase.vertexai.type.ImagenAspectRatio
-import com.google.firebase.vertexai.type.ImagenGenerationConfig
-import com.google.firebase.vertexai.type.ImagenImageFormat
-import com.google.firebase.vertexai.type.PublicPreviewAPI
-import com.google.firebase.vertexai.vertexAI
+import com.google.firebase.ai.ai
+import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.ImagenAspectRatio
+import com.google.firebase.ai.type.ImagenGenerationConfig
+import com.google.firebase.ai.type.ImagenImageFormat
+import com.google.firebase.ai.type.PublicPreviewAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,13 +42,12 @@ class ImagenViewModel @Inject constructor(): ViewModel() {
     val isGenerating: LiveData<Boolean> = _isGenerating
 
     @OptIn(PublicPreviewAPI::class)
-    private val imagenModel = Firebase.vertexAI.imagenModel(
-        modelName = "imagen-3.0-generate-002",
+    private val imagenModel = Firebase.ai(backend = GenerativeBackend.vertexAI()).imagenModel(
+        modelName = "imagen-4.0-generate-preview-05-20",
         generationConfig = ImagenGenerationConfig(
             numberOfImages = 1,
             aspectRatio = ImagenAspectRatio.SQUARE_1x1,
             imageFormat = ImagenImageFormat.jpeg(compressionQuality = 75),
-            addWatermark = true
         ),
     )
 

@@ -24,7 +24,7 @@ Browse the samples inside the `/samples` folder:
 - More to come...
 
 > **Requires Firebase setup** the samples relying on Google Cloud models (Gemini Pro, Gemini Flash, etc...) 
-> require setting up a Firebase project and connecting the app to Firebase (read more [here](https://firebase.google.com/docs/vertex-ai/get-started?platform=android#set-up-firebase)).   
+> require setting up a Firebase project and connecting the app to Firebase (read more [here](https://firebase.google.com/docs/ai-logic/get-started?platform=android&api=dev#set-up-firebase)).   
 
 > 🚧 **Work-in-Progress:** we are working on bringing more samples into the application.
 
@@ -33,7 +33,7 @@ Browse the samples inside the `/samples` folder:
 1. Clone the repository
 2. Open the whole project in Android Studio.
 3. Set up a Firebase project and connect your app to Firebase by adding your Firebase configuration 
-file (google-services.json) to the app. Read more [here](https://firebase.google.com/docs/vertex-ai/get-started?platform=android#set-up-firebase).
+file (google-services.json) to the app. Read more [here](https://firebase.google.com/docs/ai-logic/get-started?platform=android&api=dev#set-up-firebase).
 3. Sync & Run `app` configuration
 
 The app will open with the samples list screen that allows you to navigate throughout the different 

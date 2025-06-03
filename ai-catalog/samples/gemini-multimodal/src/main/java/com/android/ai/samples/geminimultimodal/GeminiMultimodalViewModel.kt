@@ -21,12 +21,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
-import com.google.firebase.vertexai.type.HarmBlockThreshold
-import com.google.firebase.vertexai.type.HarmCategory
-import com.google.firebase.vertexai.type.SafetySetting
-import com.google.firebase.vertexai.type.content
-import com.google.firebase.vertexai.type.generationConfig
-import com.google.firebase.vertexai.vertexAI
+import com.google.firebase.ai.ai
+import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.HarmBlockThreshold
+import com.google.firebase.ai.type.HarmCategory
+import com.google.firebase.ai.type.SafetySetting
+import com.google.firebase.ai.type.content
+import com.google.firebase.ai.type.generationConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -41,7 +42,7 @@ class GeminiMultimodalViewModel @Inject constructor(): ViewModel() {
     val isGenerating: LiveData<Boolean> = _isGenerating
 
     private val generativeModel by lazy {
-        Firebase.vertexAI.generativeModel(
+        Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(
             "gemini-2.0-flash",
             generationConfig = generationConfig {
                 temperature = 0.9f

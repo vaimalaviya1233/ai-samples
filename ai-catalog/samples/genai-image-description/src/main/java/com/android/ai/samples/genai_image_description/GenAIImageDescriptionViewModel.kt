@@ -18,22 +18,21 @@
 package com.android.ai.samples.genai_image_description
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.ai.samples.geminimultimodal.R
 import com.google.mlkit.genai.common.FeatureStatus
-import kotlinx.coroutines.guava.await
 import com.google.mlkit.genai.imagedescription.ImageDescriber
 import com.google.mlkit.genai.imagedescription.ImageDescriberOptions
 import com.google.mlkit.genai.imagedescription.ImageDescription
 import com.google.mlkit.genai.imagedescription.ImageDescriptionRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.android.ai.samples.geminimultimodal.R
 
 class GenAIImageDescriptionViewModel @Inject constructor() : ViewModel() {
     private val _resultGenerated = MutableStateFlow("")
