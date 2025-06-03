@@ -78,7 +78,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.vertexai)
+    implementation(libs.firebase.ai)
     ksp(libs.hilt.compiler)
 
     implementation(project(":samples:gemini-multimodal"))

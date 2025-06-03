@@ -53,7 +53,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview.android)
     ksp(libs.hilt.compiler)
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.vertexai)
+    implementation(libs.firebase.ai)
 
     // Media3 ExoPlayer
     implementation(libs.androidx.media3.exoplayer)

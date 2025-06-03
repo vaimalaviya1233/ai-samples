@@ -25,11 +25,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
-import com.google.firebase.vertexai.type.ImagenAspectRatio
-import com.google.firebase.vertexai.type.ImagenGenerationConfig
-import com.google.firebase.vertexai.type.ImagenImageFormat
-import com.google.firebase.vertexai.type.PublicPreviewAPI
-import com.google.firebase.vertexai.vertexAI
+import com.google.firebase.ai.ai
+import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.ImagenAspectRatio
+import com.google.firebase.ai.type.ImagenGenerationConfig
+import com.google.firebase.ai.type.ImagenImageFormat
+import com.google.firebase.ai.type.PublicPreviewAPI
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmentation
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmenterOptions
@@ -48,13 +49,12 @@ class MagicSelfieViewModel @Inject constructor(): ViewModel() {
     private val _progress = MutableLiveData<String?>(null)
     val progress: LiveData<String?> = _progress
 
-    private val imagenModel = Firebase.vertexAI.imagenModel(
-        modelName = "imagen-3.0-generate-002",
+    private val imagenModel = Firebase.ai(backend = GenerativeBackend.vertexAI()).imagenModel(
+        modelName = "imagen-4.0-generate-preview-05-20",
         generationConfig = ImagenGenerationConfig(
             numberOfImages = 1,
             aspectRatio = ImagenAspectRatio.PORTRAIT_3x4,
             imageFormat = ImagenImageFormat.jpeg(compressionQuality = 75),
-            addWatermark = true
         ),
     )
 

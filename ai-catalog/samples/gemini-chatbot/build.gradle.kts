@@ -62,7 +62,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material.icons.extended)
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.vertexai)
+    implementation(libs.firebase.ai)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.runtime.livedata)
