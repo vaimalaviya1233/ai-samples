@@ -1,0 +1,40 @@
+name: Build AI Catalog Android App
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'ai-catalog/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'ai-catalog/**'
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'zulu'
+        cache: 'gradle'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Make gradlew executable
+      working-directory: ./ai-catalog
+      run: chmod +x ./gradlew
+
+    - name: Build AI Catalog app
+      working-directory: ./ai-catalog
+      run: ./gradlew :app:assembleDebug
+
+    - name: Run AI Catalog app unit tests
+      working-directory: ./ai-catalog
+      run: ./gradlew :app:testDebugUnitTest
