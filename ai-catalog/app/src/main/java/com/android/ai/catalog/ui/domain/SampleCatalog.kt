@@ -17,7 +17,7 @@
 
 package com.android.ai.catalog.ui.domain
 
-import android.content.Context
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.android.ai.catalog.R
@@ -30,81 +30,76 @@ import com.android.ai.samples.genai_writing_assistance.GenAIWritingAssistanceScr
 import com.android.ai.samples.imagen.ImagenScreen
 import com.android.ai.samples.magicselfie.MagicSelfieScreen
 
-class SampleCatalog(
-    context: Context
-) {
+val sampleCatalog = listOf<SampleCatalogItem>(
+    SampleCatalogItem(
+        title = R.string.gemini_multimodal_sample_title,
+        description = R.string.gemini_multimodal_sample_description,
+        route = "GeminiMultimodalScreen",
+        sampleEntryScreen = { GeminiMultimodalScreen() },
+        tags = listOf(SampleTags.GEMINI_2_0_FLASH, SampleTags.FIREBASE),
+        needsFirebase = true
+    ),
+    SampleCatalogItem(
+        title = R.string.gemini_chatbot_sample_title,
+        description = R.string.gemini_chatbot_sample_description,
+        route = "GeminiChitchatScreen",
+        sampleEntryScreen = { GeminiChatbotScreen() },
+        tags = listOf(SampleTags.GEMINI_2_0_FLASH, SampleTags.FIREBASE),
+        needsFirebase = true
+    ),
+    SampleCatalogItem(
+        title = R.string.genai_summarization_sample_title,
+        description = R.string.genai_summarization_sample_description,
+        route = "GenAISummarizationScreen",
+        sampleEntryScreen = { GenAISummarizationScreen() },
+        tags = listOf(SampleTags.GEMINI_NANO, SampleTags.ML_KIT)
+    ),
+    SampleCatalogItem(
+        title = R.string.genai_image_description_sample_title,
+        description = R.string.genai_image_description_sample_description,
+        route = "GenAIImageDescriptionScreen",
+        sampleEntryScreen = { GenAIImageDescriptionScreen() },
+        tags = listOf(SampleTags.GEMINI_NANO, SampleTags.ML_KIT)
+    ),
+    SampleCatalogItem(
+        title = R.string.genai_writing_assistance_sample_title,
+        description = R.string.genai_writing_assistance_sample_description,
+        route = "GenAIWritingAssistanceScreen",
+        sampleEntryScreen = { GenAIWritingAssistanceScreen() },
+        tags = listOf(SampleTags.GEMINI_NANO, SampleTags.ML_KIT)
+    ),
+    SampleCatalogItem(
+        title = R.string.imagen_sample_title,
+        description = R.string.imagen_sample_description,
+        route = "ImagenImageGenerationScreen",
+        sampleEntryScreen = { ImagenScreen() },
+        tags = listOf(SampleTags.IMAGEN, SampleTags.FIREBASE),
+        needsFirebase = true
+    ),
+    SampleCatalogItem(
+        title = R.string.magic_selfie_sample_title,
+        description = R.string.magic_selfie_sample_description,
+        route = "MagicSelfieScreen",
+        sampleEntryScreen = { MagicSelfieScreen() },
+        tags = listOf(SampleTags.IMAGEN, SampleTags.FIREBASE, SampleTags.ML_KIT),
+        needsFirebase = true
+    ),
+    SampleCatalogItem(
+        title = R.string.gemini_video_summarization_sample_title,
+        description = R.string.gemini_video_summarization_sample_description,
+        route = "VideoSummarizationScreen",
+        sampleEntryScreen = { VideoSummarizationScreen() },
+        tags = listOf(SampleTags.GEMINI_2_0_FLASH, SampleTags.FIREBASE, SampleTags.MEDIA3),
+        needsFirebase = true
+    ),
 
-    val list = listOf(
-        SampleCatalogItem(
-            title = context.getString(R.string.gemini_multimodal_sample_title),
-            description = context.getString(R.string.gemini_multimodal_sample_description),
-            route = "GeminiMultimodalScreen",
-            sampleEntryScreen = { GeminiMultimodalScreen() },
-            tags = listOf(SampleTags.GEMINI_2_0_FLASH, SampleTags.FIREBASE),
-            needsFirebase = true
-        ),
-        SampleCatalogItem(
-            title = context.getString(R.string.gemini_chatbot_sample_title),
-            description = context.getString(R.string.gemini_chatbot_sample_description),
-            route = "GeminiChitchatScreen",
-            sampleEntryScreen = { GeminiChatbotScreen() },
-            tags = listOf(SampleTags.GEMINI_2_0_FLASH, SampleTags.FIREBASE),
-            needsFirebase = true
-        ),
-        SampleCatalogItem(
-            title = context.getString(R.string.genai_summarization_sample_title),
-            description = context.getString(R.string.genai_summarization_sample_description),
-            route = "GenAISummarizationScreen",
-            sampleEntryScreen = { GenAISummarizationScreen() },
-            tags = listOf(SampleTags.GEMINI_NANO, SampleTags.ML_KIT)
-        ),
-        SampleCatalogItem(
-            title = context.getString(R.string.genai_image_description_sample_title),
-            description = context.getString(R.string.genai_image_description_sample_description),
-            route = "GenAIImageDescriptionScreen",
-            sampleEntryScreen = { GenAIImageDescriptionScreen() },
-            tags = listOf(SampleTags.GEMINI_NANO, SampleTags.ML_KIT)
-        ),
-        SampleCatalogItem(
-            title = context.getString(R.string.genai_writing_assistance_sample_title),
-            description = context.getString(R.string.genai_writing_assistance_sample_description),
-            route = "GenAIWritingAssistanceScreen",
-            sampleEntryScreen = { GenAIWritingAssistanceScreen() },
-            tags = listOf(SampleTags.GEMINI_NANO, SampleTags.ML_KIT)
-        ),
-        SampleCatalogItem(
-            title = context.getString(R.string.imagen_sample_title),
-            description = context.getString(R.string.imagen_sample_description),
-            route = "ImagenImageGenerationScreen",
-            sampleEntryScreen = { ImagenScreen() },
-            tags = listOf(SampleTags.IMAGEN, SampleTags.FIREBASE),
-            needsFirebase = true
-        ),
-        SampleCatalogItem(
-            title = context.getString(R.string.magic_selfie_sample_title),
-            description = context.getString(R.string.magic_selfie_sample_description),
-            route = "MagicSelfieScreen",
-            sampleEntryScreen = { MagicSelfieScreen() },
-            tags = listOf(SampleTags.IMAGEN, SampleTags.FIREBASE, SampleTags.ML_KIT),
-            needsFirebase = true
-        ),
-        SampleCatalogItem(
-            title = context.getString(R.string.gemini_video_summarization_sample_title),
-            description = context.getString(R.string.gemini_video_summarization_sample_description),
-            route = "VideoSummarizationScreen",
-            sampleEntryScreen = { VideoSummarizationScreen() },
-            tags = listOf(SampleTags.GEMINI_2_0_FLASH, SampleTags.FIREBASE, SampleTags.MEDIA3),
-            needsFirebase = true
-        ),
+    // To create a new sample entry, add a new SampleCatalogItem here.
+)
 
-        // To create a new sample entry, add a new SampleCatalogItem here.
-    )
-
-}
 
 data class SampleCatalogItem(
-    val title: String,
-    val description: String,
+    @StringRes val title: Int,
+    @StringRes val description: Int,
     val route: String,
     val sampleEntryScreen: @Composable () -> Unit,
     val tags: List<SampleTags> = emptyList(),

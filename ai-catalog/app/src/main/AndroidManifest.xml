@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AISampleCatalog"
         tools:targetApi="31"
-        android:name=".CatalogApp"
+        android:name=".CatalogApplication"
         android:enableOnBackInvokedCallback="true"
         >
         <activity

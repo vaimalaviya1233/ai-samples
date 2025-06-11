@@ -69,8 +69,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun GeminiChatbotScreen (
     viewModel: GeminiChatbotViewModel = hiltViewModel()
 ) {
-
-    val context = LocalContext.current
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
     val messages by viewModel.messageList.collectAsState()
@@ -90,7 +88,7 @@ fun GeminiChatbotScreen (
                     Text(text = stringResource(id = R.string.geminichatbot_title_bar))
                 },
                 actions = {
-                    SeeCodeButton(context)
+                    SeeCodeButton()
                 }
             )
         }
@@ -189,8 +187,10 @@ fun MessageBubble(
 }
 
 @Composable
-fun SeeCodeButton(context: Context) {
+fun SeeCodeButton() {
+    val context = LocalContext.current
     val githubLink = "https://github.com/android/ai-samples/tree/main/ai-catalog/samples/gemini-chatbot"
+
     Button(
         onClick = {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))

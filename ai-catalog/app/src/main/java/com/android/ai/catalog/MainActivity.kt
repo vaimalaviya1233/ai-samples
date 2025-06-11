@@ -23,7 +23,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import com.android.ai.catalog.ui.CatalogScreen
+import com.android.ai.catalog.ui.CatalogApp
 import com.android.ai.catalog.ui.theme.AISampleCatalogTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AISampleCatalogTheme {
-                CatalogScreen(modifier = Modifier.fillMaxSize())
+                CatalogApp(modifier = Modifier.fillMaxSize())
             }
         }
     }

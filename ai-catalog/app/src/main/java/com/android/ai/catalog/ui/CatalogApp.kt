@@ -55,19 +55,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.android.ai.catalog.R
-import com.android.ai.catalog.ui.domain.SampleCatalog
 import com.android.ai.catalog.ui.domain.SampleCatalogItem
 import com.google.firebase.FirebaseApp
 import kotlinx.serialization.Serializable
+import androidx.core.net.toUri
+import com.android.ai.catalog.ui.domain.sampleCatalog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CatalogScreen(modifier: Modifier = Modifier) {
+fun CatalogApp(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val navController = rememberNavController()
-    val catalog = SampleCatalog(
-        context
-    )
 
     var isDialogOpened by remember { mutableStateOf(false) }
 
@@ -92,7 +90,7 @@ fun CatalogScreen(modifier: Modifier = Modifier) {
                 LazyColumn(
                     modifier = Modifier.padding(innerPadding)
                 ) {
-                    items(catalog.list) {
+                    items(sampleCatalog) {
                         CatalogListItem(catalogItem = it) {
                             if (it.needsFirebase && !isFirebaseInitialized()) {
                                 isDialogOpened = true
@@ -105,7 +103,7 @@ fun CatalogScreen(modifier: Modifier = Modifier) {
             }
         }
 
-        catalog.list.forEach {
+        sampleCatalog.forEach {
             val catalogItem = it
             composable(catalogItem.route) {
                 catalogItem.sampleEntryScreen()
@@ -115,11 +113,12 @@ fun CatalogScreen(modifier: Modifier = Modifier) {
 
 
     if (isDialogOpened) {
-        firebaseRequiredAlert(
+        FirebaseRequiredAlert(
             onDismiss = { isDialogOpened = false },
             onOpenFirebaseDocClick = {
                 isDialogOpened = false
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://firebase.google.com/docs/vertex-ai/get-started#no-existing-firebase"))
+                val intent = Intent(Intent.ACTION_VIEW,
+                    "https://firebase.google.com/docs/vertex-ai/get-started#no-existing-firebase".toUri())
                 context.startActivity(intent)
             }
         )
@@ -131,6 +130,7 @@ fun CatalogListItem(
     catalogItem: SampleCatalogItem,
     onButtonClick: () -> Unit
 ) {
+    val context = LocalContext.current
     ElevatedCard(
         modifier = Modifier.padding(18.dp),
         onClick = {
@@ -146,11 +146,11 @@ fun CatalogListItem(
                     .padding(bottom = 8.dp),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                text = catalogItem.title
+                text =  context.getString(catalogItem.title)
             )
             Text(
                 modifier = Modifier.padding(bottom = 8.dp),
-                text = catalogItem.description,
+                text = context.getString(catalogItem.description),
             )
             Row {
                 Spacer(Modifier.weight(1f))
@@ -182,7 +182,7 @@ fun CatalogListItem(
 object HomeScreen
 
 @Composable
-fun firebaseRequiredAlert(
+fun FirebaseRequiredAlert(
     onDismiss: () -> Unit = {},
     onOpenFirebaseDocClick: () -> Unit = {}
 ) {
@@ -221,12 +221,7 @@ fun firebaseRequiredAlert(
 fun isFirebaseInitialized(): Boolean {
     return try {
         val firebaseApp = FirebaseApp.getInstance()
-        Log.d("CatalogScreen", "firebaseApp.options.projectId: ${firebaseApp.options.projectId}")
-        if (firebaseApp.options.projectId == "mock_project") {
-            Log.e("CatalogScreen", "Firebase is not initialized")
-            return false
-        }
-        return true
+        return firebaseApp.options.projectId != "mock_project"
     } catch (e: IllegalStateException) {
         Log.e("CatalogScreen", "Firebase is not initialized")
         return false
