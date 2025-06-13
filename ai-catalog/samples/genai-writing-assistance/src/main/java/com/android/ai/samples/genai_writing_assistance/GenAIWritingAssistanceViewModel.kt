@@ -18,6 +18,7 @@
 package com.android.ai.samples.genai_writing_assistance
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.genai.common.FeatureStatus
@@ -65,7 +66,7 @@ class GenAIWritingAssistanceViewModel @Inject constructor() : ViewModel() {
                 try {
                     proofreadFeatureStatus = proofreader.checkFeatureStatus().await()
                 } catch (error: Exception) {
-                    error.printStackTrace()
+                    Log.e("GenAIProofread", "Error checking feature status", error)
                 }
 
                 if (proofreadFeatureStatus == FeatureStatus.UNAVAILABLE) {
@@ -118,7 +119,7 @@ class GenAIWritingAssistanceViewModel @Inject constructor() : ViewModel() {
                 try {
                     rewriteFeatureStatus = rewriter.checkFeatureStatus().await()
                 } catch (error: Exception) {
-                    error.printStackTrace()
+                    Log.e("GenAIRewrite", "Error checking feature status", error)
                 }
 
                 if (rewriteFeatureStatus == FeatureStatus.UNAVAILABLE) {
