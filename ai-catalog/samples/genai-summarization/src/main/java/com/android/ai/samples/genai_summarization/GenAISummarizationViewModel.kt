@@ -18,6 +18,7 @@
 package com.android.ai.samples.genai_summarization
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.genai.common.FeatureStatus
@@ -52,7 +53,15 @@ class GenAISummarizationViewModel @Inject constructor() : ViewModel() {
 
         viewModelScope.launch {
             summarizer?.let { summarizer ->
-                val featureStatus = summarizer.checkFeatureStatus().await()
+
+                var featureStatus = FeatureStatus.UNAVAILABLE
+
+                try {
+                    featureStatus = summarizer.checkFeatureStatus().await()
+                } catch (error: Exception) {
+                    Log.e("GenAISummarization", "Error checking feature status", error)
+                }
+
                 if (featureStatus == FeatureStatus.UNAVAILABLE) {
                     _summarizationGenerated.value =
                         context.getString(R.string.summarization_not_available)

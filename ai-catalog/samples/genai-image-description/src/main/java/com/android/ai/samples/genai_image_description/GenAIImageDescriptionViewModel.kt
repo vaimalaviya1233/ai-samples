@@ -20,6 +20,7 @@ package com.android.ai.samples.genai_image_description
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.ai.samples.geminimultimodal.R
@@ -52,7 +53,13 @@ class GenAIImageDescriptionViewModel @Inject constructor() : ViewModel() {
 
         viewModelScope.launch {
             imageDescriber?.let { imageDescriber ->
-                val featureStatus = imageDescriber.checkFeatureStatus().await()
+                var featureStatus = FeatureStatus.UNAVAILABLE
+
+                try {
+                    featureStatus = imageDescriber.checkFeatureStatus().await()
+                } catch (error: Exception) {
+                    Log.e("GenAIImageDesc", "Error checking feature status", error)
+                }
 
                 if (featureStatus == FeatureStatus.UNAVAILABLE) {
                     _resultGenerated.value =

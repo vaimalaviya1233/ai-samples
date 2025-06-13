@@ -18,6 +18,7 @@
 package com.android.ai.samples.genai_writing_assistance
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.genai.common.FeatureStatus
@@ -59,7 +60,15 @@ class GenAIWritingAssistanceViewModel @Inject constructor() : ViewModel() {
 
         viewModelScope.launch {
             proofreader?.let { proofreader ->
-                val proofreadFeatureStatus = proofreader.checkFeatureStatus().await()
+
+                var proofreadFeatureStatus = FeatureStatus.UNAVAILABLE
+
+                try {
+                    proofreadFeatureStatus = proofreader.checkFeatureStatus().await()
+                } catch (error: Exception) {
+                    Log.e("GenAIProofread", "Error checking feature status", error)
+                }
+
                 if (proofreadFeatureStatus == FeatureStatus.UNAVAILABLE) {
                     _resultGenerated.value =
                         context.getString(R.string.genai_writing_assistance_not_available)
@@ -105,7 +114,14 @@ class GenAIWritingAssistanceViewModel @Inject constructor() : ViewModel() {
 
         viewModelScope.launch {
             rewriter?.let { rewriter ->
-                val rewriteFeatureStatus = rewriter.checkFeatureStatus().await()
+                var rewriteFeatureStatus = FeatureStatus.UNAVAILABLE
+
+                try {
+                    rewriteFeatureStatus = rewriter.checkFeatureStatus().await()
+                } catch (error: Exception) {
+                    Log.e("GenAIRewrite", "Error checking feature status", error)
+                }
+
                 if (rewriteFeatureStatus == FeatureStatus.UNAVAILABLE) {
                     _resultGenerated.value =
                         context.getString(R.string.genai_writing_assistance_not_available)
