@@ -59,7 +59,15 @@ class GenAIWritingAssistanceViewModel @Inject constructor() : ViewModel() {
 
         viewModelScope.launch {
             proofreader?.let { proofreader ->
-                val proofreadFeatureStatus = proofreader.checkFeatureStatus().await()
+
+                var proofreadFeatureStatus = FeatureStatus.UNAVAILABLE
+
+                try {
+                    proofreadFeatureStatus = proofreader.checkFeatureStatus().await()
+                } catch (error: Exception) {
+                    error.printStackTrace()
+                }
+
                 if (proofreadFeatureStatus == FeatureStatus.UNAVAILABLE) {
                     _resultGenerated.value =
                         context.getString(R.string.genai_writing_assistance_not_available)
@@ -105,7 +113,14 @@ class GenAIWritingAssistanceViewModel @Inject constructor() : ViewModel() {
 
         viewModelScope.launch {
             rewriter?.let { rewriter ->
-                val rewriteFeatureStatus = rewriter.checkFeatureStatus().await()
+                var rewriteFeatureStatus = FeatureStatus.UNAVAILABLE
+
+                try {
+                    rewriteFeatureStatus = rewriter.checkFeatureStatus().await()
+                } catch (error: Exception) {
+                    error.printStackTrace()
+                }
+
                 if (rewriteFeatureStatus == FeatureStatus.UNAVAILABLE) {
                     _resultGenerated.value =
                         context.getString(R.string.genai_writing_assistance_not_available)

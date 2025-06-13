@@ -52,7 +52,15 @@ class GenAISummarizationViewModel @Inject constructor() : ViewModel() {
 
         viewModelScope.launch {
             summarizer?.let { summarizer ->
-                val featureStatus = summarizer.checkFeatureStatus().await()
+
+                var featureStatus = FeatureStatus.UNAVAILABLE
+
+                try {
+                    featureStatus = summarizer.checkFeatureStatus().await()
+                } catch (error: Exception) {
+                    error.printStackTrace()
+                }
+
                 if (featureStatus == FeatureStatus.UNAVAILABLE) {
                     _summarizationGenerated.value =
                         context.getString(R.string.summarization_not_available)
