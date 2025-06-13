@@ -51,7 +51,7 @@ class VideoSummarizationViewModel @Inject constructor() : ViewModel() {
             _outputText.value = OutputTextState.Loading
 
             try {
-                val generativeModel = Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel("gemini-2.0-flash")
+                val generativeModel = Firebase.ai(backend = GenerativeBackend.vertexAI()).generativeModel("gemini-2.0-flash")
 
                 val requestContent = content {
                     fileData(videoSource.toString(), "video/mp4")
