@@ -88,7 +88,7 @@ fun GeminiChatbotScreen (
                     Text(text = stringResource(id = R.string.geminichatbot_title_bar))
                 },
                 actions = {
-                    SeeCodeButton()
+                    button()
                 }
             )
         }
@@ -187,22 +187,24 @@ fun MessageBubble(
 }
 
 @Composable
-fun SeeCodeButton() {
+fun button() {
     val context = LocalContext.current
     val githubLink = "https://github.com/android/ai-samples/tree/main/ai-catalog/samples/gemini-chatbot"
 
-    Button(
-        onClick = {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))
-            context.startActivity(intent)
-        },
-        modifier = Modifier.padding(end = 8.dp)
-    ) {
-        Icon(Icons.Filled.Code, contentDescription = "See code")
-        Text(
-            modifier = Modifier.padding(start = 8.dp),
-            fontSize = 12.sp,
-            text = stringResource(R.string.see_code)
-        )
+    when (0) {
+        0 ->     Button(
+            onClick = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))
+                context.startActivity(intent)
+            },
+            modifier = Modifier.padding(end = 8.dp)
+        ) {
+            Icon(Icons.Filled.Code, contentDescription = "See code")
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                fontSize = 12.sp,
+                text = stringResource(R.string.see_code)
+            )
+        }
     }
 }
