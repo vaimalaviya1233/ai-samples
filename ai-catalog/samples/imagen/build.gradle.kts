@@ -44,15 +44,18 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
-    }
+
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    lint {
+        warningsAsErrors = true
     }
 }
 
@@ -68,6 +71,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.ui.tooling.preview)
+    debugImplementation(libs.ui.tooling)
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
