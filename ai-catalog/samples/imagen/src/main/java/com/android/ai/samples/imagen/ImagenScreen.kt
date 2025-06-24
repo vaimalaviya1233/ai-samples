@@ -80,10 +80,7 @@ fun ImagenScreen(viewModel: ImagenViewModel = hiltViewModel()) {
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun ImagenScreen(
-    uiState: ImagenUIState,
-    onGenerateClick: (String) -> Unit
-) {
+private fun ImagenScreen(uiState: ImagenUIState, onGenerateClick: (String) -> Unit) {
     val isGenerating = uiState is ImagenUIState.Loading
 
     Scaffold(
@@ -113,7 +110,7 @@ private fun ImagenScreen(
                 uiState = uiState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f)
+                    .aspectRatio(1f),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -121,7 +118,7 @@ private fun ImagenScreen(
             GenerationInput(
                 onGenerateClick = onGenerateClick,
                 enabled = !isGenerating,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxWidth(),
             )
 
             // Ensure the screen scrolls when the keyboard appears
@@ -200,7 +197,7 @@ private fun GenerationInput(onGenerateClick: (String) -> Unit, enabled: Boolean,
             },
             enabled = enabled,
             contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Icon(
                 Icons.Default.SmartToy,

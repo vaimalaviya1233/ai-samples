@@ -33,7 +33,10 @@ import kotlinx.coroutines.launch
 sealed interface ImagenUIState {
     data object Initial : ImagenUIState
     data object Loading : ImagenUIState
-    data class ImageGenerated(val bitmap: Bitmap, val contentDescription: String) : ImagenUIState
+    data class ImageGenerated(
+        val bitmap: Bitmap,
+        val contentDescription: String,
+    ) : ImagenUIState
     data class Error(val message: String) : ImagenUIState
 }
 
