@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,7 +56,8 @@ import com.android.ai.samples.geminivideosummary.player.VideoPlayer
 import com.android.ai.samples.geminivideosummary.player.VideoSelectionDropdown
 import com.android.ai.samples.geminivideosummary.ui.OutputTextDisplay
 import com.android.ai.samples.geminivideosummary.ui.TextToSpeechControls
-import com.android.ai.samples.geminivideosummary.util.VideoList
+import com.android.ai.samples.geminivideosummary.util.sampleVideoList
+import com.android.ai.samples.geminivideosummary.viewmodel.OutputTextState
 import com.android.ai.samples.geminivideosummary.viewmodel.VideoSummarizationViewModel
 import com.google.com.android.ai.samples.geminivideosummary.R
 import java.util.Locale
@@ -71,18 +73,21 @@ import java.util.Locale
 fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewModel()) {
 
     val context = LocalContext.current
-    val videoList = VideoList().videos
-    var selectedVideoUri by remember { mutableStateOf<Uri?>(videoList.first().uri) }
+    var selectedVideoUri by remember { mutableStateOf<Uri?>(sampleVideoList.first().uri) }
     var isDropdownExpanded by remember { mutableStateOf(false) }
-    var newVideoUrl by remember { mutableStateOf("") }
-    val outputText by viewModel.outputText.collectAsState()
+    val outputTextState  =  viewModel.outputText.collectAsState()
+    val showListenButton by remember {
+        derivedStateOf {
+            outputTextState.value is OutputTextState.Success
+        }
+    }
     var textForSpeech by remember { mutableStateOf("") }
     var textToSpeech: TextToSpeech? by remember { mutableStateOf(null) }
     var isInitialized by remember { mutableStateOf(false) }
     var isSpeaking by remember { mutableStateOf(false) }
     var isPaused by remember { mutableStateOf(false) }
 
-    val videoOptions = videoList.map { it.title to it.uri }
+    val videoOptions = sampleVideoList.map { it.title to it.uri }
 
     val exoPlayer = remember(context) {
         ExoPlayer.Builder(context).build().apply {
@@ -153,7 +158,7 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
                 },
                 onNewVideoUrlChanged = { url ->
                     run {
-                        newVideoUrl = url
+                       // newVideoUrl = url
                     }
                 },
                 onDropdownExpanded = { expanded ->
@@ -179,8 +184,8 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (outputText.toString().isNotEmpty()) {
-                textForSpeech = outputText.toString()
+            if (showListenButton) {
+                textForSpeech = outputTextState.toString()
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -208,7 +213,7 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutputTextDisplay(outputText = outputText, modifier = Modifier.weight(1f))
+            OutputTextDisplay(outputTextState.value, modifier = Modifier.weight(1f))
 
             Spacer(modifier = Modifier.height(16.dp))
         }

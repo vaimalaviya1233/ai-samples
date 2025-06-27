@@ -122,7 +122,7 @@ private fun handleSpeakButtonClick(
     onSpeakingStateChange: (speaking: Boolean, paused: Boolean) -> Unit,
 ) {
     // Check if the voice and language is supported
-    val result = textToSpeech?.language?.let {
+    val result = textToSpeech?.voice?.locale?.let {
         textToSpeech.setLanguage(selectedAccent)
     }
     if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
