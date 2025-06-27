@@ -61,6 +61,7 @@ import com.android.ai.samples.geminivideosummary.viewmodel.OutputTextState
 import com.android.ai.samples.geminivideosummary.viewmodel.VideoSummarizationViewModel
 import com.google.com.android.ai.samples.geminivideosummary.R
 import java.util.Locale
+import androidx.core.net.toUri
 
 /**
  * Composable function for the AI Video Summarization screen.
@@ -172,14 +173,19 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(modifier = Modifier.fillMaxWidth(), onClick = {
-                onSummarizeButtonClick(
-                    selectedVideoUri, textToSpeech, onSpeakingStateChange = { speaking, paused ->
-                        isSpeaking = speaking
-                        isPaused = paused
-                    }, viewModel,
-                )
-            }) {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    onSummarizeButtonClick(
+                        selectedVideoUri, textToSpeech,
+                        onSpeakingStateChange = { speaking, paused ->
+                            isSpeaking = speaking
+                            isPaused = paused
+                        },
+                        viewModel,
+                    )
+                },
+            ) {
                 Text(stringResource(R.string.summarize_video_button))
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -233,7 +239,7 @@ fun onSelectedVideoChange(
     onSpeakingStateChange: (speaking: Boolean, paused: Boolean) -> Unit,
 ) {
     if (selectedVideoUri != null) {
-        if (selectedVideoUri == Uri.parse("")) {
+        if (selectedVideoUri == "".toUri()) {
             // do nothing
         } else {
             exoPlayer.setMediaItem(MediaItem.fromUri(selectedVideoUri))
@@ -258,8 +264,7 @@ fun onSummarizeButtonClick(
 }
 
 fun initializeTextToSpeech(context: Context, onInitialized: (Boolean) -> Unit): TextToSpeech {
-    var textToSpeech: TextToSpeech? = null
-    textToSpeech = TextToSpeech(context) { status ->
+    val textToSpeech = TextToSpeech(context) { status ->
         if (status == TextToSpeech.SUCCESS) {
             onInitialized(true)
         } else {
@@ -274,10 +279,12 @@ fun initializeTextToSpeech(context: Context, onInitialized: (Boolean) -> Unit): 
 fun SeeCodeButton(context: Context) {
     val githubLink =
         "https://github.com/android/ai-samples/tree/main/ai-catalog/samples/gemini-video-summarization"
-    Button(onClick = {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))
-        context.startActivity(intent)
-    }) {
+    Button(
+        onClick = {
+            val intent = Intent(Intent.ACTION_VIEW, githubLink.toUri())
+            context.startActivity(intent)
+        },
+    ) {
         Icon(Icons.Filled.Code, contentDescription = "See code")
         Text(
             modifier = Modifier.padding(start = 8.dp),
