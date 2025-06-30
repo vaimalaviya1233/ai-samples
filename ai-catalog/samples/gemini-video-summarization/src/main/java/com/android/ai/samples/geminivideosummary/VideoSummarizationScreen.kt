@@ -76,10 +76,10 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
     val context = LocalContext.current
     var selectedVideoUri by remember { mutableStateOf<Uri?>(sampleVideoList.first().uri) }
     var isDropdownExpanded by remember { mutableStateOf(false) }
-    val outputTextState  =  viewModel.outputText.collectAsState()
+    val outputTextState by viewModel.outputText.collectAsState()
     val showListenButton by remember {
         derivedStateOf {
-            outputTextState.value is OutputTextState.Success
+            outputTextState is OutputTextState.Success
         }
     }
     var textForSpeech by remember { mutableStateOf("") }
@@ -88,7 +88,7 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
     var isSpeaking by remember { mutableStateOf(false) }
     var isPaused by remember { mutableStateOf(false) }
 
-    val videoOptions = sampleVideoList.map { it.title to it.uri }
+    val videoOptions = sampleVideoList
 
     val exoPlayer = remember(context) {
         ExoPlayer.Builder(context).build().apply {
@@ -152,7 +152,7 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
             VideoSelectionDropdown(
                 selectedVideoUri = selectedVideoUri,
                 isDropdownExpanded = isDropdownExpanded,
-                videoOptions = videoOptions,
+                videoOptions = videoOptions, // Passing List<VideoItem>
                 onVideoUriSelected = { uri ->
                     selectedVideoUri = uri
                     viewModel.clearOutputText()
@@ -191,7 +191,9 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
             Spacer(modifier = Modifier.height(16.dp))
 
             if (showListenButton) {
-                textForSpeech = outputTextState.toString()
+                if (outputTextState is OutputTextState.Success) {
+                    textForSpeech = (outputTextState as OutputTextState.Success).text
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -219,7 +221,7 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutputTextDisplay(outputTextState.value, modifier = Modifier.weight(1f))
+            OutputTextDisplay(outputTextState, modifier = Modifier.weight(1f))
 
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -238,13 +240,9 @@ fun onSelectedVideoChange(
     textToSpeech: TextToSpeech?,
     onSpeakingStateChange: (speaking: Boolean, paused: Boolean) -> Unit,
 ) {
-    if (selectedVideoUri != null) {
-        if (selectedVideoUri == "".toUri()) {
-            // do nothing
-        } else {
-            exoPlayer.setMediaItem(MediaItem.fromUri(selectedVideoUri))
-            exoPlayer.prepare()
-        }
+    selectedVideoUri?.takeIf { it.toString().isNotEmpty() }?.let { uri ->
+        exoPlayer.setMediaItem(MediaItem.fromUri(uri))
+        exoPlayer.prepare()
         textToSpeech?.stop()
         onSpeakingStateChange(false, true)
     }
@@ -293,3 +291,4 @@ fun SeeCodeButton(context: Context) {
         )
     }
 }
+

@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.android.ai.samples.geminivideosummary.util.VideoItem
 
 /**
  * A composable function that displays a dropdown menu for selecting a video from a list of options.
@@ -36,7 +37,7 @@ import androidx.compose.ui.Modifier
 fun VideoSelectionDropdown(
     selectedVideoUri: Uri?,
     isDropdownExpanded: Boolean,
-    videoOptions: List<Pair<String, Uri>>,
+    videoOptions: List<VideoItem>,
     onVideoUriSelected: (Uri) -> Unit,
     onNewVideoUrlChanged: (String) -> Unit,
     onDropdownExpanded: (Boolean) -> Unit,
@@ -44,7 +45,7 @@ fun VideoSelectionDropdown(
     Box {
         OutlinedTextField(
             value = selectedVideoUri?.let {
-                videoOptions.firstOrNull { it.second == selectedVideoUri }?.first
+                videoOptions.firstOrNull { videoItem -> videoItem.uri == selectedVideoUri }?.title
             } ?: "Select Video",
             onValueChange = { },
             readOnly = true,
@@ -64,9 +65,9 @@ fun VideoSelectionDropdown(
             onDismissRequest = { onDropdownExpanded(false) },
             modifier = Modifier.fillMaxWidth(),
         ) {
-            videoOptions.forEach { (label, uri) ->
-                DropdownMenuItem(text = { Text(label) }, onClick = {
-                    onVideoUriSelected(uri)
+            videoOptions.forEach { videoItem ->
+                DropdownMenuItem(text = { Text(videoItem.title) }, onClick = {
+                    onVideoUriSelected(videoItem.uri)
                     onDropdownExpanded(false)
                     onNewVideoUrlChanged("")
                 })
