@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
@@ -60,7 +61,6 @@ import com.android.ai.samples.geminivideosummary.viewmodel.OutputTextState
 import com.android.ai.samples.geminivideosummary.viewmodel.VideoSummarizationViewModel
 import com.google.com.android.ai.samples.geminivideosummary.R
 import java.util.Locale
-import androidx.core.net.toUri
 
 /**
  * Composable function for the AI Video Summarization screen.
@@ -76,7 +76,7 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
     var selectedVideoUri by remember { mutableStateOf<Uri?>(sampleVideoList.first().uri) }
     var isDropdownExpanded by remember { mutableStateOf(false) }
     val outputTextState by viewModel.outputText.collectAsState()
-    val showListenButton by remember { mutableStateOf(outputTextState is OutputTextState.Success)}
+    val showListenButton by remember { mutableStateOf(outputTextState is OutputTextState.Success) }
     var textForSpeech by remember { mutableStateOf("") }
     var textToSpeech: TextToSpeech? by remember { mutableStateOf(null) }
     var isInitialized by remember { mutableStateOf(false) }
@@ -281,4 +281,3 @@ fun SeeCodeButton(context: Context) {
         )
     }
 }
-
