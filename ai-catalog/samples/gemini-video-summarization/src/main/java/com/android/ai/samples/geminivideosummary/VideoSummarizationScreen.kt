@@ -39,7 +39,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,11 +76,7 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
     var selectedVideoUri by remember { mutableStateOf<Uri?>(sampleVideoList.first().uri) }
     var isDropdownExpanded by remember { mutableStateOf(false) }
     val outputTextState by viewModel.outputText.collectAsState()
-    val showListenButton by remember {
-        derivedStateOf {
-            outputTextState is OutputTextState.Success
-        }
-    }
+    val showListenButton by remember { mutableStateOf(outputTextState is OutputTextState.Success)}
     var textForSpeech by remember { mutableStateOf("") }
     var textToSpeech: TextToSpeech? by remember { mutableStateOf(null) }
     var isInitialized by remember { mutableStateOf(false) }
@@ -152,15 +147,10 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
             VideoSelectionDropdown(
                 selectedVideoUri = selectedVideoUri,
                 isDropdownExpanded = isDropdownExpanded,
-                videoOptions = videoOptions, // Passing List<VideoItem>
+                videoOptions = videoOptions,
                 onVideoUriSelected = { uri ->
                     selectedVideoUri = uri
                     viewModel.clearOutputText()
-                },
-                onNewVideoUrlChanged = { url ->
-                    run {
-                       // newVideoUrl = url
-                    }
                 },
                 onDropdownExpanded = { expanded ->
                     isDropdownExpanded = expanded

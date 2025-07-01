@@ -28,7 +28,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.android.ai.samples.geminivideosummary.util.VideoItem
+import com.google.com.android.ai.samples.geminivideosummary.R
 
 /**
  * A composable function that displays a dropdown menu for selecting a video from a list of options.
@@ -39,20 +41,19 @@ fun VideoSelectionDropdown(
     isDropdownExpanded: Boolean,
     videoOptions: List<VideoItem>,
     onVideoUriSelected: (Uri) -> Unit,
-    onNewVideoUrlChanged: (String) -> Unit,
     onDropdownExpanded: (Boolean) -> Unit,
 ) {
     Box {
         OutlinedTextField(
             value = selectedVideoUri?.let {
-                videoOptions.firstOrNull { videoItem -> videoItem.uri == selectedVideoUri }?.title
-            } ?: "Select Video",
+                videoOptions.firstOrNull { videoItem -> videoItem.uri == selectedVideoUri }?.let { stringResource(it.titleResId) }
+            } ?: stringResource(R.string.select_video_placeholder),
             onValueChange = { },
             readOnly = true,
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Dropdown",
+                    contentDescription = stringResource(R.string.dropdown_content_description),
                     modifier = Modifier.clickable { onDropdownExpanded(!isDropdownExpanded) },
                 )
             },
@@ -66,10 +67,9 @@ fun VideoSelectionDropdown(
             modifier = Modifier.fillMaxWidth(),
         ) {
             videoOptions.forEach { videoItem ->
-                DropdownMenuItem(text = { Text(videoItem.title) }, onClick = {
+                DropdownMenuItem(text = { Text(stringResource(videoItem.titleResId)) }, onClick = {
                     onVideoUriSelected(videoItem.uri)
                     onDropdownExpanded(false)
-                    onNewVideoUrlChanged("")
                 })
             }
         }
