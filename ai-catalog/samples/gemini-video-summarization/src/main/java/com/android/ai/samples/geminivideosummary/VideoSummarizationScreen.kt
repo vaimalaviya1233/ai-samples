@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
@@ -55,7 +56,8 @@ import com.android.ai.samples.geminivideosummary.player.VideoPlayer
 import com.android.ai.samples.geminivideosummary.player.VideoSelectionDropdown
 import com.android.ai.samples.geminivideosummary.ui.OutputTextDisplay
 import com.android.ai.samples.geminivideosummary.ui.TextToSpeechControls
-import com.android.ai.samples.geminivideosummary.util.VideoList
+import com.android.ai.samples.geminivideosummary.util.sampleVideoList
+import com.android.ai.samples.geminivideosummary.viewmodel.OutputTextState
 import com.android.ai.samples.geminivideosummary.viewmodel.VideoSummarizationViewModel
 import com.google.com.android.ai.samples.geminivideosummary.R
 import java.util.Locale
@@ -71,18 +73,17 @@ import java.util.Locale
 fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewModel()) {
 
     val context = LocalContext.current
-    val videoList = VideoList().videos
-    var selectedVideoUri by remember { mutableStateOf<Uri?>(videoList.first().uri) }
+    var selectedVideoUri by remember { mutableStateOf<Uri?>(sampleVideoList.first().uri) }
     var isDropdownExpanded by remember { mutableStateOf(false) }
-    var newVideoUrl by remember { mutableStateOf("") }
-    val outputText by viewModel.outputText.collectAsState()
+    val outputTextState by viewModel.outputText.collectAsState()
+    val showListenButton by remember { mutableStateOf(outputTextState is OutputTextState.Success) }
     var textForSpeech by remember { mutableStateOf("") }
     var textToSpeech: TextToSpeech? by remember { mutableStateOf(null) }
     var isInitialized by remember { mutableStateOf(false) }
     var isSpeaking by remember { mutableStateOf(false) }
     var isPaused by remember { mutableStateOf(false) }
 
-    val videoOptions = videoList.map { it.title to it.uri }
+    val videoOptions = sampleVideoList
 
     val exoPlayer = remember(context) {
         ExoPlayer.Builder(context).build().apply {
@@ -151,11 +152,6 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
                     selectedVideoUri = uri
                     viewModel.clearOutputText()
                 },
-                onNewVideoUrlChanged = { url ->
-                    run {
-                        newVideoUrl = url
-                    }
-                },
                 onDropdownExpanded = { expanded ->
                     isDropdownExpanded = expanded
                 },
@@ -167,20 +163,27 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(modifier = Modifier.fillMaxWidth(), onClick = {
-                onSummarizeButtonClick(
-                    selectedVideoUri, textToSpeech, onSpeakingStateChange = { speaking, paused ->
-                        isSpeaking = speaking
-                        isPaused = paused
-                    }, viewModel,
-                )
-            }) {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    onSummarizeButtonClick(
+                        selectedVideoUri, textToSpeech,
+                        onSpeakingStateChange = { speaking, paused ->
+                            isSpeaking = speaking
+                            isPaused = paused
+                        },
+                        viewModel,
+                    )
+                },
+            ) {
                 Text(stringResource(R.string.summarize_video_button))
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (outputText.toString().isNotEmpty()) {
-                textForSpeech = outputText.toString()
+            if (showListenButton) {
+                if (outputTextState is OutputTextState.Success) {
+                    textForSpeech = (outputTextState as OutputTextState.Success).text
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -208,7 +211,7 @@ fun VideoSummarizationScreen(viewModel: VideoSummarizationViewModel = hiltViewMo
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutputTextDisplay(outputText = outputText, modifier = Modifier.weight(1f))
+            OutputTextDisplay(outputTextState, modifier = Modifier.weight(1f))
 
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -227,13 +230,9 @@ fun onSelectedVideoChange(
     textToSpeech: TextToSpeech?,
     onSpeakingStateChange: (speaking: Boolean, paused: Boolean) -> Unit,
 ) {
-    if (selectedVideoUri != null) {
-        if (selectedVideoUri == Uri.parse("")) {
-            // do nothing
-        } else {
-            exoPlayer.setMediaItem(MediaItem.fromUri(selectedVideoUri))
-            exoPlayer.prepare()
-        }
+    selectedVideoUri?.takeIf { it.toString().isNotEmpty() }?.let { uri ->
+        exoPlayer.setMediaItem(MediaItem.fromUri(uri))
+        exoPlayer.prepare()
         textToSpeech?.stop()
         onSpeakingStateChange(false, true)
     }
@@ -253,8 +252,7 @@ fun onSummarizeButtonClick(
 }
 
 fun initializeTextToSpeech(context: Context, onInitialized: (Boolean) -> Unit): TextToSpeech {
-    var textToSpeech: TextToSpeech? = null
-    textToSpeech = TextToSpeech(context) { status ->
+    val textToSpeech = TextToSpeech(context) { status ->
         if (status == TextToSpeech.SUCCESS) {
             onInitialized(true)
         } else {
@@ -269,10 +267,12 @@ fun initializeTextToSpeech(context: Context, onInitialized: (Boolean) -> Unit): 
 fun SeeCodeButton(context: Context) {
     val githubLink =
         "https://github.com/android/ai-samples/tree/main/ai-catalog/samples/gemini-video-summarization"
-    Button(onClick = {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))
-        context.startActivity(intent)
-    }) {
+    Button(
+        onClick = {
+            val intent = Intent(Intent.ACTION_VIEW, githubLink.toUri())
+            context.startActivity(intent)
+        },
+    ) {
         Icon(Icons.Filled.Code, contentDescription = "See code")
         Text(
             modifier = Modifier.padding(start = 8.dp),
