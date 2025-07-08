@@ -28,12 +28,21 @@ import com.google.firebase.ai.type.generationConfig
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
+sealed class GeminiChatbotUiState {
+    data object Initial: GeminiChatbotUiState()
+    data class Generating(val messages: List<ChatMessage>) : GeminiChatbotUiState()
+    data class Success(val messages: List<ChatMessage>) : GeminiChatbotUiState()
+    data class Error(val errorMessage: String, val messages: List<ChatMessage>) :
+        GeminiChatbotUiState()
+}
 
 class GeminiChatbotViewModel @Inject constructor() : ViewModel() {
 
-    private val _messageList = MutableStateFlow(mutableListOf<ChatMessage>())
-    val messageList: StateFlow<List<ChatMessage>> = _messageList
+    private val _uiState = MutableStateFlow<GeminiChatbotUiState>(GeminiChatbotUiState.Initial)
+    val uiState: StateFlow<GeminiChatbotUiState> = _uiState.asStateFlow()
 
     private val generativeModel by lazy {
         Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(
@@ -59,21 +68,24 @@ class GeminiChatbotViewModel @Inject constructor() : ViewModel() {
     private val chat = generativeModel.startChat()
 
     fun sendMessage(message: String) {
+        val currentMessages =
+            if (_uiState.value is GeminiChatbotUiState.Success) {
+                (_uiState.value as GeminiChatbotUiState.Success).messages
+            } else {
+                emptyList()
+            }
+
+        val newMessages =
+            currentMessages.toMutableList().apply {
+                add(ChatMessage(message, System.currentTimeMillis(), false, null))
+            }
         viewModelScope.launch {
-            _messageList.value.add(
-                ChatMessage(
-                    message,
-                    System.currentTimeMillis(),
-                    false,
-                    null,
-                ),
-            )
+            try {
+                _uiState.value = GeminiChatbotUiState.Generating(newMessages)
 
-            val response = chat.sendMessage(message)
-
-            response.text?.let {
-                _messageList.value = _messageList.value.toMutableList().apply {
-                    add(
+                val response = chat.sendMessage(message)
+                response.text?.let {
+                    newMessages.add(
                         ChatMessage(
                             it.trim(),
                             System.currentTimeMillis(),
@@ -82,7 +94,24 @@ class GeminiChatbotViewModel @Inject constructor() : ViewModel() {
                         ),
                     )
                 }
+                _uiState.value = GeminiChatbotUiState.Success(newMessages)
+            } catch (e: Exception) {
+                _uiState.value =
+                    GeminiChatbotUiState.Error(
+                        e.localizedMessage ?: "Something went wrong, try again",
+                        newMessages,
+                    )
             }
         }
+    }
+
+    fun dismissError() {
+        val currentMessages =
+            if (_uiState.value is GeminiChatbotUiState.Error) {
+                (_uiState.value as GeminiChatbotUiState.Error).messages
+            } else {
+                emptyList()
+            }
+        _uiState.value = GeminiChatbotUiState.Success(currentMessages)
     }
 }

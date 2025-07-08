@@ -32,7 +32,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +46,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -60,13 +61,14 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GeminiChatbotScreen(viewModel: GeminiChatbotViewModel = hiltViewModel()) {
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
-    val messages by viewModel.messageList.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var message by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
@@ -88,15 +90,61 @@ fun GeminiChatbotScreen(viewModel: GeminiChatbotViewModel = hiltViewModel()) {
             )
         },
     ) { innerPadding ->
+
         Column {
             val layoutDirection = LocalLayoutDirection.current
-            MessageList(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                messages = messages.sortedBy { - it.timestamp },
-                contentPadding = innerPadding,
-            )
+            when (uiState) {
+                is GeminiChatbotUiState.Initial -> {
+                    MessageList(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        messages = listOf(),
+                        contentPadding = innerPadding,
+                    )
+                }
+
+                is GeminiChatbotUiState.Generating -> {
+                    MessageList(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        messages = (uiState as GeminiChatbotUiState.Generating).messages.sortedBy { -it.timestamp },
+                        contentPadding = innerPadding,
+                    )
+                    CircularProgressIndicator()
+                }
+
+                is GeminiChatbotUiState.Success -> {
+                    MessageList(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        messages = (uiState as GeminiChatbotUiState.Success).messages.sortedBy { -it.timestamp },
+                        contentPadding = innerPadding,
+                    )
+                }
+
+                is GeminiChatbotUiState.Error -> {
+                    MessageList(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        messages = (uiState as GeminiChatbotUiState.Error).messages.sortedBy { -it.timestamp },
+                        contentPadding = innerPadding,
+                    )
+                    AlertDialog(
+                        onDismissRequest = { viewModel.dismissError() },
+                        title = { Text(text = "Error") },
+                        text = { Text(text = (uiState as GeminiChatbotUiState.Error).errorMessage) },
+                        confirmButton = {
+                            Button(onClick = { viewModel.dismissError() }) {
+                                Text(text = "Dismiss")
+                            }
+                        },
+                    )
+                }
+            }
             InputBar(
                 value = message,
                 placeholder = stringResource(R.string.geminichatbot_input_placeholder),
@@ -108,7 +156,7 @@ fun GeminiChatbotScreen(viewModel: GeminiChatbotViewModel = hiltViewModel()) {
                     message = ""
                 },
                 contentPadding = innerPadding.copy(layoutDirection, top = 0.dp),
-                sendEnabled = true,
+                sendEnabled = uiState !is GeminiChatbotUiState.Generating,
             )
         }
     }
