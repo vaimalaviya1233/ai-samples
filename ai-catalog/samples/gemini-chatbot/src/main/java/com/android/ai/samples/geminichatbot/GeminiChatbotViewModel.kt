@@ -32,11 +32,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 sealed class GeminiChatbotUiState {
-    data object Initial: GeminiChatbotUiState()
+    data object Initial : GeminiChatbotUiState()
     data class Generating(val messages: List<ChatMessage>) : GeminiChatbotUiState()
     data class Success(val messages: List<ChatMessage>) : GeminiChatbotUiState()
-    data class Error(val errorMessage: String, val messages: List<ChatMessage>) :
-        GeminiChatbotUiState()
+    data class Error(
+        val errorMessage: String,
+        val messages: List<ChatMessage>,
+    ) : GeminiChatbotUiState()
 }
 
 class GeminiChatbotViewModel @Inject constructor() : ViewModel() {
