@@ -71,10 +71,10 @@ class GeminiChatbotViewModel @Inject constructor() : ViewModel() {
 
     fun sendMessage(message: String) {
         val currentMessages =
-            if (_uiState.value is GeminiChatbotUiState.Success) {
-                (_uiState.value as GeminiChatbotUiState.Success).messages
-            } else {
-                emptyList()
+            when (val state = _uiState.value) {
+                is GeminiChatbotUiState.Success -> state.messages
+                is GeminiChatbotUiState.Error -> state.messages
+                else -> emptyList()
             }
 
         val newMessages =
@@ -108,12 +108,7 @@ class GeminiChatbotViewModel @Inject constructor() : ViewModel() {
     }
 
     fun dismissError() {
-        val currentMessages =
-            if (_uiState.value is GeminiChatbotUiState.Error) {
-                (_uiState.value as GeminiChatbotUiState.Error).messages
-            } else {
-                emptyList()
-            }
-        _uiState.value = GeminiChatbotUiState.Success(currentMessages)
+        val errorState = _uiState.value as? GeminiChatbotUiState.Error ?: return
+        _uiState.value = GeminiChatbotUiState.Success(errorState.messages)
     }
 }
