@@ -16,7 +16,6 @@
 package com.android.ai.samples.geminichatbot
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,7 +31,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +45,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -59,14 +59,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GeminiChatbotScreen(viewModel: GeminiChatbotViewModel = hiltViewModel()) {
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
-    val messages by viewModel.messageList.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var message by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
@@ -88,15 +90,50 @@ fun GeminiChatbotScreen(viewModel: GeminiChatbotViewModel = hiltViewModel()) {
             )
         },
     ) { innerPadding ->
+
         Column {
             val layoutDirection = LocalLayoutDirection.current
+
+            val messages = when (val state = uiState) {
+                is GeminiChatbotUiState.Initial -> emptyList()
+                is GeminiChatbotUiState.Generating -> state.messages
+                is GeminiChatbotUiState.Success -> state.messages
+                is GeminiChatbotUiState.Error -> state.messages
+            }
+
             MessageList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                messages = messages.sortedBy { - it.timestamp },
+                messages = messages.sortedByDescending { it.timestamp },
                 contentPadding = innerPadding,
             )
+
+            when (val state = uiState) {
+                is GeminiChatbotUiState.Generating -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .align(Alignment.CenterHorizontally),
+                    )
+                }
+
+                is GeminiChatbotUiState.Error -> {
+                    AlertDialog(
+                        onDismissRequest = { viewModel.dismissError() },
+                        title = { Text(text = stringResource(R.string.error)) },
+                        text = { Text(text = state.errorMessage) },
+                        confirmButton = {
+                            Button(onClick = { viewModel.dismissError() }) {
+                                Text(text = stringResource(R.string.dismiss_button))
+                            }
+                        },
+                    )
+                }
+
+                else -> { /* No additional UI for Initial or Success states */ }
+            }
+
             InputBar(
                 value = message,
                 placeholder = stringResource(R.string.geminichatbot_input_placeholder),
@@ -108,7 +145,7 @@ fun GeminiChatbotScreen(viewModel: GeminiChatbotViewModel = hiltViewModel()) {
                     message = ""
                 },
                 contentPadding = innerPadding.copy(layoutDirection, top = 0.dp),
-                sendEnabled = true,
+                sendEnabled = uiState !is GeminiChatbotUiState.Generating,
             )
         }
     }
@@ -176,7 +213,7 @@ fun SeeCodeButton() {
 
     Button(
         onClick = {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(githubLink))
+            val intent = Intent(Intent.ACTION_VIEW, githubLink.toUri())
             context.startActivity(intent)
         },
         modifier = Modifier.padding(end = 8.dp),
