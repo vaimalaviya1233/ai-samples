@@ -126,7 +126,7 @@ fun GeminiMultimodalScreen(viewModel: GeminiMultimodalViewModel = hiltViewModel(
                 } else {
                     Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             text = stringResource(id = R.string.geminimultimodal_take_a_picture),

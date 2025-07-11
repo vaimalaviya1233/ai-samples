@@ -26,9 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class GeminiMultimodalViewModel @Inject constructor(
-    private val geminiDataSource: GeminiDataSource
-) : ViewModel() {
+class GeminiMultimodalViewModel @Inject constructor(private val geminiDataSource: GeminiDataSource) : ViewModel() {
 
     private val _uiState = MutableStateFlow<GeminiMultimodalUiState>(GeminiMultimodalUiState.Initial)
     val uiState: StateFlow<GeminiMultimodalUiState> = _uiState
