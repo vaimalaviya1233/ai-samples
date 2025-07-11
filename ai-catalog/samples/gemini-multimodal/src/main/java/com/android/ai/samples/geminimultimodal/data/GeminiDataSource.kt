@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.ai.samples.geminimultimodal
+package com.android.ai.samples.geminimultimodal.data
 
 import android.graphics.Bitmap
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.GenerativeBackend
@@ -29,18 +25,10 @@ import com.google.firebase.ai.type.SafetySetting
 import com.google.firebase.ai.type.content
 import com.google.firebase.ai.type.generationConfig
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import javax.inject.Singleton
 
-class GeminiMultimodalViewModel @Inject constructor() : ViewModel() {
-
-    private val _textGenerated = MutableStateFlow("")
-    val textGenerated: StateFlow<String> = _textGenerated
-
-    private val _isGenerating = MutableLiveData(false)
-    val isGenerating: LiveData<Boolean> = _isGenerating
-
+@Singleton
+class GeminiDataSource @Inject constructor() {
     private val generativeModel by lazy {
         Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(
             "gemini-2.0-flash",
@@ -59,20 +47,12 @@ class GeminiMultimodalViewModel @Inject constructor() : ViewModel() {
         )
     }
 
-    fun generate(bitmap: Bitmap, prompt: String) {
-        _isGenerating.value = true
-
+    suspend fun generateText(bitmap: Bitmap, prompt: String): String {
         val multimodalPrompt = content {
             image(bitmap)
             text(prompt)
         }
-        viewModelScope.launch {
-            val result = generativeModel.generateContent(multimodalPrompt)
-
-            result.text?.let {
-                _textGenerated.value = result.text!!
-            }
-            _isGenerating.postValue(false)
-        }
+        val result = generativeModel.generateContent(multimodalPrompt)
+        return result.text ?: ""
     }
 }

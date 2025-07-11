@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.ai.samples.geminimultimodal
+package com.android.ai.samples.geminimultimodal.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -24,6 +24,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.TakePicturePreview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +41,7 @@ import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,12 +51,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -63,6 +64,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.android.ai.samples.geminimultimodal.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -70,9 +73,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun GeminiMultimodalScreen(viewModel: GeminiMultimodalViewModel = hiltViewModel()) {
     val context = LocalContext.current
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
-    val textResponse by viewModel.textGenerated.collectAsState()
-    val isGenerating by viewModel.isGenerating.observeAsState(false)
-    var pictureAvailable by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val promptPlaceHolder = stringResource(id = R.string.geminimultimodal_prompt_placeholder)
     var editTextValue by remember {
@@ -83,7 +84,6 @@ fun GeminiMultimodalScreen(viewModel: GeminiMultimodalViewModel = hiltViewModel(
     val cameraLauncher = rememberLauncherForActivityResult(TakePicturePreview()) { result ->
         result?.let {
             bitmap = it
-            pictureAvailable = true
         }
     }
 
@@ -116,13 +116,23 @@ fun GeminiMultimodalScreen(viewModel: GeminiMultimodalViewModel = hiltViewModel(
                         height = 450.dp,
                     ),
             ) {
-                bitmap?.let {
+                if (bitmap != null) {
                     Image(
-                        bitmap = it.asImageBitmap(),
+                        bitmap = bitmap!!.asImageBitmap(),
                         contentDescription = "Picture",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize(),
                     )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.geminimultimodal_take_a_picture),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(6.dp))
@@ -148,7 +158,7 @@ fun GeminiMultimodalScreen(viewModel: GeminiMultimodalViewModel = hiltViewModel(
                         viewModel.generate(bitmap!!, editTextValue)
                     }
                 },
-                enabled = !isGenerating && pictureAvailable,
+                enabled = uiState !is GeminiMultimodalUiState.Loading && bitmap != null,
             ) {
                 Icon(Icons.Default.SmartToy, contentDescription = "Robot")
                 Text(modifier = Modifier.padding(start = 8.dp), text = "Generate")
@@ -158,14 +168,26 @@ fun GeminiMultimodalScreen(viewModel: GeminiMultimodalViewModel = hiltViewModel(
                     .height(24.dp),
             )
 
-            if (isGenerating) {
-                Text(
-                    text = stringResource(R.string.geminimultimodal_generating),
-                )
-            } else {
-                Text(
-                    text = textResponse,
-                )
+            when (val state = uiState) {
+                is GeminiMultimodalUiState.Initial -> {
+                    Text(
+                        text = stringResource(id = R.string.geminimultimodal_generation_placeholder),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+                is GeminiMultimodalUiState.Loading -> {
+                    CircularProgressIndicator()
+                }
+                is GeminiMultimodalUiState.Success -> {
+                    Text(
+                        text = state.generatedText,
+                    )
+                }
+                is GeminiMultimodalUiState.Error -> {
+                    Text(
+                        text = state.errorMessage,
+                    )
+                }
             }
         }
     }
