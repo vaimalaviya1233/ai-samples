@@ -116,9 +116,10 @@ fun GeminiMultimodalScreen(viewModel: GeminiMultimodalViewModel = hiltViewModel(
                         height = 450.dp,
                     ),
             ) {
-                if (bitmap != null) {
+                val currentBitmap = bitmap
+                if (currentBitmap != null) {
                     Image(
-                        bitmap = bitmap!!.asImageBitmap(),
+                        bitmap = currentBitmap.asImageBitmap(),
                         contentDescription = "Picture",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize(),
@@ -154,8 +155,9 @@ fun GeminiMultimodalScreen(viewModel: GeminiMultimodalViewModel = hiltViewModel(
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
-                    if (bitmap != null) {
-                        viewModel.generate(bitmap!!, editTextValue)
+                    val currentBitmap = bitmap
+                    if (currentBitmap != null) {
+                        viewModel.generate(currentBitmap, editTextValue)
                     }
                 },
                 enabled = uiState !is GeminiMultimodalUiState.Loading && bitmap != null,
