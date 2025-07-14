@@ -20,7 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.android.ai.catalog.R
 import com.android.ai.samples.geminichatbot.GeminiChatbotScreen
-import com.android.ai.samples.geminimultimodal.GeminiMultimodalScreen
+import com.android.ai.samples.geminimultimodal.ui.GeminiMultimodalScreen
 import com.android.ai.samples.geminivideosummary.VideoSummarizationScreen
 import com.android.ai.samples.genai_image_description.GenAIImageDescriptionScreen
 import com.android.ai.samples.genai_summarization.GenAISummarizationScreen
