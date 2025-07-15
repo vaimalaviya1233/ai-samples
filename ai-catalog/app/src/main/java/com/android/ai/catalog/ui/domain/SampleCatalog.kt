@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.android.ai.catalog.R
 import com.android.ai.samples.geminichatbot.GeminiChatbotScreen
+import com.android.ai.samples.geminilivetodo.ui.TodoScreen
 import com.android.ai.samples.geminimultimodal.ui.GeminiMultimodalScreen
 import com.android.ai.samples.geminivideosummary.VideoSummarizationScreen
 import com.android.ai.samples.genai_image_description.GenAIImageDescriptionScreen
@@ -28,7 +29,8 @@ import com.android.ai.samples.genai_writing_assistance.GenAIWritingAssistanceScr
 import com.android.ai.samples.imagen.ui.ImagenScreen
 import com.android.ai.samples.magicselfie.ui.MagicSelfieScreen
 
-val sampleCatalog = listOf<SampleCatalogItem>(
+@androidx.annotation.RequiresPermission(android.Manifest.permission.RECORD_AUDIO)
+val sampleCatalog = listOf(
     SampleCatalogItem(
         title = R.string.gemini_multimodal_sample_title,
         description = R.string.gemini_multimodal_sample_description,
@@ -88,6 +90,14 @@ val sampleCatalog = listOf<SampleCatalogItem>(
         route = "VideoSummarizationScreen",
         sampleEntryScreen = { VideoSummarizationScreen() },
         tags = listOf(SampleTags.GEMINI_2_0_FLASH, SampleTags.FIREBASE, SampleTags.MEDIA3),
+        needsFirebase = true,
+    ),
+    SampleCatalogItem(
+        title = R.string.gemini_live_todo_title,
+        description = R.string.gemini_live_todo_description,
+        route = "GeminiLiveTodoScreen",
+        sampleEntryScreen = { TodoScreen() },
+        tags = listOf(SampleTags.GEMINI_2_0_FLASH, SampleTags.FIREBASE),
         needsFirebase = true,
     ),
 
