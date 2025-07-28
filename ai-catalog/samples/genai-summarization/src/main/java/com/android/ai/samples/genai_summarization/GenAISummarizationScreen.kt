@@ -31,18 +31,17 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.android.ai.samples.geminimultimodal.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,18 +50,17 @@ fun GenAISummarizationScreen(viewModel: GenAISummarizationViewModel = hiltViewMo
     val sampleTextOptions = stringArrayResource(R.array.summarization_sample_text)
 
     val sheetState = rememberModalBottomSheetState()
-    var showBottomSheet by remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
-    val summarizationResult = viewModel.summarizationGenerated.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var textInput by remember { mutableStateOf("") }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(), topBar = {
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
             TopAppBar(
                 colors = topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ),
                 title = {
                     Text(text = stringResource(id = R.string.genai_summarization_title_bar))
@@ -89,9 +87,9 @@ fun GenAISummarizationScreen(viewModel: GenAISummarizationViewModel = hiltViewMo
             // Summarize button
             Button(
                 onClick = {
-                    showBottomSheet = true
-                    viewModel.summarize(textInput, context)
+                    viewModel.summarize(textInput)
                 },
+                enabled = textInput.isNotEmpty(),
                 modifier = Modifier
                     .padding(10.dp)
                     .align(Alignment.CenterHorizontally),
@@ -122,15 +120,27 @@ fun GenAISummarizationScreen(viewModel: GenAISummarizationViewModel = hiltViewMo
             }
         }
 
-        if (showBottomSheet) {
+        if (uiState !is GenAISummarizationUiState.Initial) {
+            val bottomSheetText = when (val state = uiState) {
+                is GenAISummarizationUiState.DownloadingFeature -> stringResource(
+                    id = R.string.summarization_downloading,
+                    state.bytesDownloaded,
+                    state.bytesToDownload,
+                )
+                is GenAISummarizationUiState.Error -> stringResource(state.errorMessageStringRes)
+                is GenAISummarizationUiState.Generating -> state.generatedOutput
+                GenAISummarizationUiState.Initial -> ""
+                is GenAISummarizationUiState.Success -> state.generatedOutput
+                GenAISummarizationUiState.CheckingFeatureStatus -> stringResource(id = R.string.summarization_checking_feature_status)
+            }
             ModalBottomSheet(
                 onDismissRequest = {
-                    showBottomSheet = false
                     viewModel.clearGeneratedSummary()
-                }, sheetState = sheetState,
+                },
+                sheetState = sheetState,
             ) {
                 Text(
-                    text = summarizationResult.value,
+                    text = bottomSheetText,
                     modifier = Modifier.padding(
                         top = 8.dp,
                         bottom = 24.dp,
