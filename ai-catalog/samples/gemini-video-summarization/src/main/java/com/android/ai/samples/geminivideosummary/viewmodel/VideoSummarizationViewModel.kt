@@ -19,13 +19,17 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.ai.samples.geminivideosummary.util.sampleVideoList
 import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.GenerativeBackend
 import com.google.firebase.ai.type.content
+import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -38,18 +42,45 @@ import kotlinx.coroutines.launch
 class VideoSummarizationViewModel @Inject constructor() : ViewModel() {
 
     private val tag = "VideoSummaryVM"
-    private val _outputText = MutableStateFlow<OutputTextState>(OutputTextState.Initial)
-    val outputText: StateFlow<OutputTextState> = _outputText
+    private val _uiState = MutableStateFlow(VideoSummarizationState())
+    val uiState: StateFlow<VideoSummarizationState> = _uiState.asStateFlow()
 
-    fun getVideoSummary(videoSource: Uri) {
-        clearOutputText()
+    fun onVideoSelected(uri: Uri) {
+        _uiState.update { it.copy(selectedVideoUri = uri, summarizationState = SummarizationState.Idle) }
+    }
+
+    fun onAccentSelected(locale: Locale) {
+        _uiState.update { it.copy(selectedAccent = locale) }
+    }
+
+    fun onTtsStateChanged(newTtsState: TtsState) {
+        val currentState = _uiState.value.summarizationState
+        if (currentState is SummarizationState.Success) {
+            _uiState.update {
+                it.copy(summarizationState = currentState.copy(ttsState = newTtsState))
+            }
+        }
+    }
+
+    fun onTtsInitializationResult(isSuccess: Boolean, errorMessage: String?) {
+        if (!isSuccess && errorMessage != null) {
+            _uiState.update {
+                it.copy(summarizationState = SummarizationState.Error(errorMessage))
+            }
+        }
+    }
+
+    fun summarize() {
+        val videoSource = _uiState.value.selectedVideoUri ?: return
         viewModelScope.launch {
             val promptData =
                 "Summarize this video in the form of top 3-4 takeaways only. Write in the form of bullet points. Don't assume if you don't know"
-            _outputText.value = OutputTextState.Loading
+            _uiState.update { it.copy(summarizationState = SummarizationState.InProgress) }
 
             try {
-                val generativeModel = Firebase.ai(backend = GenerativeBackend.vertexAI()).generativeModel("gemini-2.0-flash")
+                val generativeModel =
+                    Firebase.ai(backend = GenerativeBackend.vertexAI())
+                        .generativeModel("gemini-2.0-flash")
 
                 val requestContent = content {
                     fileData(videoSource.toString(), "video/mp4")
@@ -59,15 +90,45 @@ class VideoSummarizationViewModel @Inject constructor() : ViewModel() {
                 generativeModel.generateContentStream(requestContent).collect { response ->
                     outputStringBuilder.append(response.text)
                 }
-                _outputText.value = OutputTextState.Success(outputStringBuilder.toString())
+                _uiState.update {
+                    it.copy(
+                        summarizationState = SummarizationState.Success(outputStringBuilder.toString()),
+                    )
+                }
             } catch (error: Exception) {
-                _outputText.value = error.localizedMessage?.let { OutputTextState.Error(it) }!!
+                _uiState.update {
+                    it.copy(
+                        summarizationState = SummarizationState.Error(error.localizedMessage ?: "An unknown error occurred"),
+                    )
+                }
                 Log.e(tag, "Error processing prompt : $error")
             }
         }
     }
 
-    fun clearOutputText() {
-        _outputText.value = OutputTextState.Loading
+    fun dismissError() {
+        _uiState.update { it.copy(summarizationState = SummarizationState.Idle) }
     }
 }
+
+sealed interface SummarizationState {
+    data object Idle : SummarizationState
+    data object InProgress : SummarizationState
+    data class Error(val message: String) : SummarizationState
+    data class Success(
+        val summarizedText: String,
+        val ttsState: TtsState = TtsState.Idle,
+    ) : SummarizationState
+}
+
+sealed interface TtsState {
+    data object Idle : TtsState
+    data object Playing : TtsState
+    data object Paused : TtsState
+}
+
+data class VideoSummarizationState(
+    val selectedVideoUri: Uri? = sampleVideoList.first().uri,
+    val summarizationState: SummarizationState = SummarizationState.Idle,
+    val selectedAccent: Locale = Locale.US,
+)
