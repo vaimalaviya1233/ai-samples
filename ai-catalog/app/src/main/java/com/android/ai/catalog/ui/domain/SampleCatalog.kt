@@ -22,6 +22,7 @@ import com.android.ai.catalog.R
 import com.android.ai.samples.geminichatbot.GeminiChatbotScreen
 import com.android.ai.samples.geminilivetodo.ui.TodoScreen
 import com.android.ai.samples.geminimultimodal.ui.GeminiMultimodalScreen
+import com.android.ai.samples.geminivideometadatacreation.VideoMetadataCreationScreen
 import com.android.ai.samples.geminivideosummary.VideoSummarizationScreen
 import com.android.ai.samples.genai_image_description.GenAIImageDescriptionScreen
 import com.android.ai.samples.genai_summarization.GenAISummarizationScreen
@@ -89,6 +90,14 @@ val sampleCatalog = listOf(
         description = R.string.gemini_video_summarization_sample_description,
         route = "VideoSummarizationScreen",
         sampleEntryScreen = { VideoSummarizationScreen() },
+        tags = listOf(SampleTags.GEMINI_FLASH, SampleTags.FIREBASE, SampleTags.MEDIA3),
+        needsFirebase = true,
+    ),
+    SampleCatalogItem(
+        title = R.string.gemini_video_metadata_creation_sample_title,
+        description = R.string.gemini_video_metadata_creation_sample_description,
+        route = "VideoMetadataCreationScreen",
+        sampleEntryScreen = { VideoMetadataCreationScreen() },
         tags = listOf(SampleTags.GEMINI_FLASH, SampleTags.FIREBASE, SampleTags.MEDIA3),
         needsFirebase = true,
     ),
